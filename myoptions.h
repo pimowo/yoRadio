@@ -1,0 +1,182 @@
+/* =========================================================
+   yoRadio – plik konfiguracyjny myoptions.h
+   ---------------------------------------------------------
+   Generator opcji:
+   https://trip5.github.io/ehRadio_myoptions/generator.html
+
+   Repozytorium:
+   https://github.com/e2002/yoradio
+
+   KONIECZNIE przeczytaj:
+   https://github.com/VaraiTamas/yoRadio/blob/main/README.md
+   ========================================================= */
+
+#ifndef myoptions_h
+#define myoptions_h
+
+/* =========================================================
+   1. PLATFORMA / PŁYTKA
+   ========================================================= */
+
+/* Wymuszamy ESP32-S3 (np. Super Mini) */
+#ifndef ARDUINO_ESP32S3_DEV
+#define ARDUINO_ESP32S3_DEV
+#endif
+
+/* =========================================================
+   2. DEBUG / DIAGNOSTYKA
+   ========================================================= */
+
+// #define HEAP_DBG        // Debug sterty (tylko do testów)
+
+/* =========================================================
+   3. JĘZYK I LOKALIZACJA
+   ========================================================= */
+
+/* Język interfejsu
+   Dostępne: HU NL PL RU EN GR SK DE */
+#define L10N_LANGUAGE PL
+
+/* Imieniny (tylko wybrane języki)
+   Dostępne: HU, PL, NL, GR, DE */
+// #define NAMEDAYS_FILE PL
+
+/* =========================================================
+   4. DIODY / LED
+   ========================================================= */
+
+/* Wbudowana dioda RGB (jeśli dostępna na płytce) */
+#define USE_BUILTIN_LED true // true = używaj, false = ignoruj
+
+/* =========================================================
+   5. SIEĆ / OTA / BEZPIECZEŃSTWO
+   ========================================================= */
+
+/* Aktualizacja OTA z Arduino IDE */
+#define USE_OTA true
+#define OTA_PASS "12345987" // Hasło OTA (Zmień!)
+
+/* Autoryzacja panelu WWW */
+// #define HTTP_USER "admin"
+// #define HTTP_PASS "haslo"
+
+/* =========================================================
+   6. WYŚWIETLACZ TFT
+   ========================================================= */
+
+/* Model wyświetlacza */
+// #define DSP_MODEL DSP_ILI9488
+// #define DSP_MODEL DSP_ILI9341
+#define DSP_MODEL DSP_ST7796
+
+/* Piny TFT */
+#define BRIGHTNESS_PIN 14 // Podświetlenie (BL)
+#define TFT_CS 10         // Chip Select
+#define TFT_DC 9          // Data / Command
+#define TFT_RST -1        // Reset (-1 = brak)
+
+/*
+   SPI (sprzętowe):
+   GPIO 11 – MOSI
+   GPIO 12 – SCLK
+   GPIO 13 – MISO (NIE podłączać do TFT!)
+*/
+
+/* =========================================================
+   7. PANEL DOTYKOWY (opcjonalnie)
+   ========================================================= */
+
+// #define TS_MODEL TS_MODEL_XPT2046
+// #define TS_CS    3
+
+/* =========================================================
+   8. AUDIO – DAC PCM5102A (I2S)
+   ========================================================= */
+
+#define I2S_BCLK 5 // Bit Clock (BCK)
+#define I2S_DOUT 4 // Dane audio (DIN)
+#define I2S_LRC 6  // Left/Right Clock (LCK)
+
+/* =========================================================
+   9. STEROWANIE – ENKODERY
+   ========================================================= */
+
+/* Enkoder główny */
+#define ENC_BTNR 41 // Obrót w prawo
+#define ENC_BTNL 40 // Obrót w lewo
+#define ENC_BTNB 39 // Przycisk
+#define ENC_INTERNALPULLUP false
+
+/* Drugi enkoder (opcjonalny) */
+// #define ENC2_BTNR 47
+// #define ENC2_BTNL 48
+// #define ENC2_BTNB 21
+// #define ENC2_INTERNALPULLUP true
+
+/* =========================================================
+   10. PRZYCISKI FUNKCYJNE
+   ========================================================= */
+
+/* Przycisk zmiany źródła audio
+   yoRadio / Bluetooth / TV / AUX */
+#define SOURCE_BTN 21
+
+/* =========================================================
+   11. RTC – ZEGAR CZASU RZECZYWISTEGO
+   ========================================================= */
+
+// #define RTC_SCL     7
+// #define RTC_SDA     8
+// #define RTC_MODULE DS3231
+
+/* =========================================================
+   12. PILOT IR / WYBUDZANIE
+   ========================================================= */
+
+// #define IR_PIN   38
+// #define WAKE_PIN 42
+
+/* =========================================================
+   13. KARTA SD
+   ========================================================= */
+
+// #define SDC_CS 18
+// #define SDSPISPEED 4000000   // 4 MHz – stabilniej przy SPI shared
+
+/* =========================================================
+   14. ZEGAR – WYGLĄD I FUNKCJE
+   ========================================================= */
+
+#define CLOCKFONT_MONO false // Segmenty nieaktywne (true = widoczne)
+
+// #define AM_PM_STYLE          // Format 12h
+// #define CLOCKFONT VT_DIGI_OLD // Stara czcionka 7-segmentowa
+
+/* Odczyt godziny przez Google TTS */
+#define CLOCK_TTS_ENABLED false
+#define CLOCK_TTS_LANGUAGE "PL"
+#define CLOCK_TTS_INTERVAL_MINUTES 30
+
+/* =========================================================
+   15. POGODA
+   ========================================================= */
+
+// #define WEATHER_FMT_SHORT   // Bez przewijania
+// #define EXT_WEATHER true    // Pełny raport
+// #define WIND_SPEED_IN_KMH   // km/h zamiast m/s
+
+/* =========================================================
+   16. VU METER
+   ========================================================= */
+
+// #define BOOMBOX_STYLE   // Wychylenie od środka
+#define VU_PEAK // Wskaźnik szczytu
+
+/* =========================================================
+   17. LISTA STACJI
+   ========================================================= */
+
+// #define DIRECT_CHANNEL_CHANGE     // Zmiana bez klikania
+// #define STATIONS_LIST_RETURN_TIME 2
+
+#endif // myoptions_h
