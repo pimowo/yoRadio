@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "myoptions.h" // dla SOURCE_BTN
 
 // Nowe źródła audio
@@ -18,6 +19,26 @@ void handleSourceButton();
 
 #if IR_PIN != 255
 enum : uint8_t
+=======
+#ifndef controls_h
+#define controls_h
+#include <cstdint>
+#include "common.h"
+
+// --- Audio source enum and global ---
+enum AudioSource_e
+{
+    SRC_RADIO = 0,
+    SRC_BT,
+    SRC_TV,
+    SRC_AUX,
+    SRC_MAX
+};
+extern AudioSource_e currentAudioSource;
+
+#if IR_PIN != 255
+enum ir_codes_e
+>>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
 {
     IR_UP = 0,
     IR_PREV = 1,
@@ -39,7 +60,11 @@ enum : uint8_t
 };
 #endif
 
+<<<<<<< HEAD
 boolean checklpdelay(int m, unsigned long &tstamp);
+=======
+bool checklpdelay(int m, unsigned long &tstamp);
+>>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
 
 void initControls();
 void loopControls();

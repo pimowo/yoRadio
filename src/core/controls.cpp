@@ -1,5 +1,13 @@
+<<<<<<< HEAD
 #include "myoptions.h"
 #include <functional>
+=======
+
+#include "controls.h"
+#include "Arduino.h"
+#include "display.h"
+#include <stdint.h>
+>>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
 
 AudioSource_e currentAudioSource = SRC_RADIO;
 
@@ -7,6 +15,7 @@ void handleSourceButton()
 {
   static uint32_t lastDebounce = 0;
   if (millis() - lastDebounce < 250)
+<<<<<<< HEAD
     return; // prosta eliminacja drgań
   lastDebounce = millis();
   currentAudioSource = (AudioSource_e)((currentAudioSource + 1) % SRC_MAX);
@@ -16,6 +25,12 @@ void handleSourceButton()
     player.setVol(0);
   }
   display.putRequest(NEWMODE, PLAYER); // wymuś odświeżenie ekranu
+=======
+    return;
+  lastDebounce = millis();
+  currentAudioSource = (AudioSource_e)((currentAudioSource + 1) % SRC_MAX);
+  display.putRequest(NEWSTATION, 0); // wymuś odświeżenie stacji
+>>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
 }
 // v0.9.670 // Módosítva. "vol_step"
 #include "Arduino.h"
@@ -110,6 +125,7 @@ void IRAM_ATTR readEncoder2ISR()
 void initControls()
 {
 #if SOURCE_BTN != 255
+<<<<<<< HEAD
   if (ENC_INTERNALPULLUP)
   {
     pinMode(SOURCE_BTN, INPUT_PULLUP);
@@ -118,6 +134,12 @@ void initControls()
   {
     pinMode(SOURCE_BTN, INPUT);
   }
+=======
+  if (SOURCE_BTN_INTERNALPULLUP)
+    pinMode(SOURCE_BTN, INPUT_PULLUP);
+  else
+    pinMode(SOURCE_BTN, INPUT);
+>>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
 #endif
 
 #if ENC_BTNL != 255
@@ -166,11 +188,18 @@ void initControls()
 
 void loopControls()
 {
+<<<<<<< HEAD
+=======
+  // Obsługa przycisku zmiany źródła
+>>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
 #if SOURCE_BTN != 255
   if (digitalRead(SOURCE_BTN) == LOW)
   {
     handleSourceButton();
+<<<<<<< HEAD
     // Czekaj aż puścisz przycisk, by nie powtarzać
+=======
+>>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
     while (digitalRead(SOURCE_BTN) == LOW)
       delay(10);
   }
@@ -587,8 +616,11 @@ void onBtnDuringLongPress(int id)
 
 void controlsEvent(bool toRight, int8_t volDelta)
 {
+<<<<<<< HEAD
   if (currentAudioSource != SRC_RADIO)
     return; // Blokuj sterowanie radiem jeśli nie radio
+=======
+>>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
   if (display.mode() == NUMBERS)
   {
     display.numOfNextStation = 0;
@@ -629,8 +661,11 @@ void controlsEvent(bool toRight, int8_t volDelta)
 
 void onBtnClick(int id)
 {
+<<<<<<< HEAD
   if (currentAudioSource != SRC_RADIO)
     return; // Blokuj przyciski jeśli nie radio
+=======
+>>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
   bool passBnCenter = (controlEvt_e)id == EVT_BTNCENTER || (controlEvt_e)id == EVT_ENCBTNB || (controlEvt_e)id == EVT_ENC2BTNB;
   controlEvt_e btnid = static_cast<controlEvt_e>(id);
   pm.on_btn_click(btnid);

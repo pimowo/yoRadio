@@ -120,7 +120,11 @@
 /* Przycisk zmiany źródła audio
    yoRadio / Bluetooth / TV / AUX */
 #define SOURCE_BTN 21
+<<<<<<< HEAD
 #define ENC_INTERNALPULLUP true
+=======
+#define SOURCE_BTN_INTERNALPULLUP true
+>>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
 
 /* =========================================================
    11. RTC – ZEGAR CZASU RZECZYWISTEGO
