@@ -46,7 +46,7 @@
    ========================================================= */
 
 /* Wbudowana dioda RGB (jeśli dostępna na płytce) */
-#define USE_BUILTIN_LED true // true = używaj, false = ignoruj
+#define USE_BUILTIN_LED false // true = używaj, false = ignoruj
 
 /* =========================================================
    5. SIEĆ / OTA / BEZPIECZEŃSTWO
@@ -120,6 +120,7 @@
 /* Przycisk zmiany źródła audio
    yoRadio / Bluetooth / TV / AUX */
 #define SOURCE_BTN 21
+#define ENC_INTERNALPULLUP true
 
 /* =========================================================
    11. RTC – ZEGAR CZASU RZECZYWISTEGO
