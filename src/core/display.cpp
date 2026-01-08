@@ -1,29 +1,3 @@
-<<<<<<< HEAD
-#include "controls.h"
-=======
-#include <stdint.h>
-
-#include "controls.h"
-extern AudioSource_e currentAudioSource;
-
-// Pomocnicza funkcja do pobierania nazwy źródła
-static const char *getSourceName(int src)
-{
-  switch (src)
-  {
-  case 0:
-    return nullptr; // SRC_RADIO
-  case 1:
-    return "Bluetooth";
-  case 2:
-    return "TV S/PDIF";
-  case 3:
-    return "AUX RCA";
-  default:
-    return nullptr;
-  }
-}
->>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
 // Módosítva v0.9.710 "vol_step"
 #include "Arduino.h"
 #include "options.h"
@@ -905,19 +879,8 @@ void Display::_setRSSI(int rssi)
 void Display::_station()
 {
   _meta->setAlign(metaConf.widget.align);
-<<<<<<< HEAD
-  switch (currentAudioSource)
+  if (config.getMode() == PM_WEB || config.getMode() == PM_SDCARD)
   {
-  case SRC_RADIO:
-=======
-  const char *srcName = getSourceName(currentAudioSource);
-  if (srcName)
-  {
-    _meta->setText(srcName);
-  }
-  else
-  {
->>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
     if (config.station.name[0] == '.')
     {
       _meta->setText(config.station.name + 1);
@@ -926,25 +889,12 @@ void Display::_station()
     {
       _meta->setText(config.station.name);
     }
-<<<<<<< HEAD
-    break;
-  case SRC_BLUETOOTH:
-    _meta->setText("Bluetooth");
-    break;
-  case SRC_TV:
-    _meta->setText("TV S/PDIF");
-    break;
-  case SRC_AUX:
-    _meta->setText("AUX RCA");
-    break;
-  default:
-    _meta->setText("");
-    break;
+  }
+  else
+  {
+    _meta->setText(config.getModeName(config.getMode()));
   }
 
-=======
-  }
->>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
   /*#ifdef USE_NEXTION
   nextion.newNameset(config.station.name);
   nextion.bitrate(config.station.bitrate);
@@ -965,9 +915,8 @@ char *split(char *str, const char *delim)
 
 void Display::_title()
 {
-<<<<<<< HEAD
   // Ha üres a title, használja a playlistben tárolt nevet.
-  if (currentAudioSource != SRC_RADIO)
+  if (config.getMode() == PM_BLUETOOTH || config.getMode() == PM_TV || config.getMode() == PM_AUX)
   {
     _title1->setText("");
     if (_title2)
@@ -991,37 +940,6 @@ void Display::_title()
     else
     {
       _title1->setText(config.station.title);
-=======
-  // Ukryj artystę/utwór dla BT, TV, AUX
-  if (currentAudioSource == 0)
-  { // SRC_RADIO
-    if (strlen(config.station.title) == 0)
-    {
-      strlcpy(config.station.title, config.station.name, sizeof(config.station.title));
-    }
-    if (strlen(config.station.title) > 0)
-    {
-      char tmpbuf[strlen(config.station.title) + 1];
-      strlcpy(tmpbuf, config.station.title, sizeof(tmpbuf));
-      char *stitle = split(tmpbuf, " - ");
-      if (stitle && _title2)
-      {
-        _title1->setText(tmpbuf);
-        _title2->setText(stitle);
-      }
-      else
-      {
-        _title1->setText(config.station.title);
-        if (_title2)
-        {
-          _title2->setText("");
-        }
-      }
-    }
-    else
-    {
-      _title1->setText("");
->>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
       if (_title2)
       {
         _title2->setText("");

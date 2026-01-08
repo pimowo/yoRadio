@@ -1,37 +1,3 @@
-<<<<<<< HEAD
-#include "myoptions.h"
-#include <functional>
-=======
-
-#include "controls.h"
-#include "Arduino.h"
-#include "display.h"
-#include <stdint.h>
->>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
-
-AudioSource_e currentAudioSource = SRC_RADIO;
-
-void handleSourceButton()
-{
-  static uint32_t lastDebounce = 0;
-  if (millis() - lastDebounce < 250)
-<<<<<<< HEAD
-    return; // prosta eliminacja drgań
-  lastDebounce = millis();
-  currentAudioSource = (AudioSource_e)((currentAudioSource + 1) % SRC_MAX);
-  // Wycisz jeśli nie radio
-  if (currentAudioSource != SRC_RADIO)
-  {
-    player.setVol(0);
-  }
-  display.putRequest(NEWMODE, PLAYER); // wymuś odświeżenie ekranu
-=======
-    return;
-  lastDebounce = millis();
-  currentAudioSource = (AudioSource_e)((currentAudioSource + 1) % SRC_MAX);
-  display.putRequest(NEWSTATION, 0); // wymuś odświeżenie stacji
->>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
-}
 // v0.9.670 // Módosítva. "vol_step"
 #include "Arduino.h"
 #include "options.h"
@@ -51,10 +17,10 @@ int lpId = -1;
 #define DUMMYDISPLAY
 #endif
 
-#define ISPUSHBUTTONS BTN_LEFT != 255 || BTN_CENTER != 255 || BTN_RIGHT != 255 || ENC_BTNB != 255 || BTN_UP != 255 || BTN_DOWN != 255 || ENC2_BTNB != 255 || BTN_MODE != 255
+#define ISPUSHBUTTONS BTN_LEFT != 255 || BTN_CENTER != 255 || BTN_RIGHT != 255 || ENC_BTNB != 255 || BTN_UP != 255 || BTN_DOWN != 255 || ENC2_BTNB != 255 || BTN_MODE != 255 || SRC_BTN != 255
 #if ISPUSHBUTTONS
 #include "../OneButton/OneButton.h"
-OneButton button[]{{BTN_LEFT, true, BTN_INTERNALPULLUP}, {BTN_CENTER, true, BTN_INTERNALPULLUP}, {BTN_RIGHT, true, BTN_INTERNALPULLUP}, {ENC_BTNB, true, ENC_INTERNALPULLUP}, {BTN_UP, true, BTN_INTERNALPULLUP}, {BTN_DOWN, true, BTN_INTERNALPULLUP}, {ENC2_BTNB, true, ENC2_INTERNALPULLUP}, {BTN_MODE, true, BTN_INTERNALPULLUP}};
+OneButton button[]{{BTN_LEFT, true, BTN_INTERNALPULLUP}, {BTN_CENTER, true, BTN_INTERNALPULLUP}, {BTN_RIGHT, true, BTN_INTERNALPULLUP}, {ENC_BTNB, true, ENC_INTERNALPULLUP}, {BTN_UP, true, BTN_INTERNALPULLUP}, {BTN_DOWN, true, BTN_INTERNALPULLUP}, {ENC2_BTNB, true, ENC2_INTERNALPULLUP}, {BTN_MODE, true, BTN_INTERNALPULLUP}, {SRC_BTN, true, true}};
 constexpr uint8_t nrOfButtons = sizeof(button) / sizeof(button[0]);
 #endif
 
@@ -124,23 +90,6 @@ void IRAM_ATTR readEncoder2ISR()
 
 void initControls()
 {
-#if SOURCE_BTN != 255
-<<<<<<< HEAD
-  if (ENC_INTERNALPULLUP)
-  {
-    pinMode(SOURCE_BTN, INPUT_PULLUP);
-  }
-  else
-  {
-    pinMode(SOURCE_BTN, INPUT);
-  }
-=======
-  if (SOURCE_BTN_INTERNALPULLUP)
-    pinMode(SOURCE_BTN, INPUT_PULLUP);
-  else
-    pinMode(SOURCE_BTN, INPUT);
->>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
-#endif
 
 #if ENC_BTNL != 255
   encoder.begin();
@@ -158,7 +107,7 @@ void initControls()
 #if ISPUSHBUTTONS
   for (int i = 0; i < nrOfButtons; i++)
   {
-    if ((i == 0 && BTN_LEFT == 255) || (i == 1 && BTN_CENTER == 255) || (i == 2 && BTN_RIGHT == 255) || (i == 3 && ENC_BTNB == 255) || (i == 4 && BTN_UP == 255) || (i == 5 && BTN_DOWN == 255) || (i == 6 && ENC2_BTNB == 255) || (i == 7 && BTN_MODE == 255))
+    if ((i == 0 && BTN_LEFT == 255) || (i == 1 && BTN_CENTER == 255) || (i == 2 && BTN_RIGHT == 255) || (i == 3 && ENC_BTNB == 255) || (i == 4 && BTN_UP == 255) || (i == 5 && BTN_DOWN == 255) || (i == 6 && ENC2_BTNB == 255) || (i == 7 && BTN_MODE == 255) || (i == 8 && SRC_BTN == 255))
       continue;
     button[i].attachClick([](void *p)
                           { onBtnClick((int)p); }, (void *)i);
@@ -188,22 +137,6 @@ void initControls()
 
 void loopControls()
 {
-<<<<<<< HEAD
-=======
-  // Obsługa przycisku zmiany źródła
->>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
-#if SOURCE_BTN != 255
-  if (digitalRead(SOURCE_BTN) == LOW)
-  {
-    handleSourceButton();
-<<<<<<< HEAD
-    // Czekaj aż puścisz przycisk, by nie powtarzać
-=======
->>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
-    while (digitalRead(SOURCE_BTN) == LOW)
-      delay(10);
-  }
-#endif
   if (display.mode() == UPDATING || display.mode() == SDCHANGE)
     return;
   if (SDC_CS == 255 && display.mode() == LOST)
@@ -519,6 +452,11 @@ void onBtnLongPressStart(int id)
 #if defined(DUMMYDISPLAY) && !defined(USE_NEXTION)
     break;
 #endif
+    // Dla źródeł zewnętrznych (BT, AUX1, AUX2) przytrzymanie nic nie robi
+    if (config.getMode() == PM_BLUETOOTH || config.getMode() == PM_TV || config.getMode() == PM_AUX)
+    {
+      break;
+    }
     display.putRequest(NEWMODE, display.mode() == PLAYER ? STATIONS : PLAYER);
     break;
   }
@@ -616,11 +554,6 @@ void onBtnDuringLongPress(int id)
 
 void controlsEvent(bool toRight, int8_t volDelta)
 {
-<<<<<<< HEAD
-  if (currentAudioSource != SRC_RADIO)
-    return; // Blokuj sterowanie radiem jeśli nie radio
-=======
->>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
   if (display.mode() == NUMBERS)
   {
     display.numOfNextStation = 0;
@@ -661,15 +594,10 @@ void controlsEvent(bool toRight, int8_t volDelta)
 
 void onBtnClick(int id)
 {
-<<<<<<< HEAD
-  if (currentAudioSource != SRC_RADIO)
-    return; // Blokuj przyciski jeśli nie radio
-=======
->>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
   bool passBnCenter = (controlEvt_e)id == EVT_BTNCENTER || (controlEvt_e)id == EVT_ENCBTNB || (controlEvt_e)id == EVT_ENC2BTNB;
   controlEvt_e btnid = static_cast<controlEvt_e>(id);
   pm.on_btn_click(btnid);
-  if (network.status != CONNECTED && network.status != SDREADY && (controlEvt_e)id != EVT_BTNMODE && !passBnCenter)
+  if (network.status != CONNECTED && network.status != SDREADY && (controlEvt_e)id != EVT_BTNMODE && (controlEvt_e)id != EVT_BTNSOURCE && !passBnCenter)
     return;
   switch (btnid)
   {
@@ -768,6 +696,11 @@ void onBtnClick(int id)
     break;
   }
 #endif
+  case EVT_BTNSOURCE:
+  {
+    config.changeMode();
+    break;
+  }
   default:
     break;
   }

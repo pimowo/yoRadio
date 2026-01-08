@@ -1,4 +1,4 @@
-//Módosítva v0.9.689 "nameday" "wumeter"
+// Módosítva v0.9.689 "nameday" "wumeter"
 #ifndef config_h
 #define config_h
 #pragma once
@@ -6,43 +6,47 @@
 #include <SPI.h>
 #include <SPIFFS.h>
 #include <EEPROM.h>
-#include "../displays/widgets/widgetsconfig.h"  //BitrateFormat
+#include "../displays/widgets/widgetsconfig.h" //BitrateFormat
 
-#define EEPROM_SIZE     768
-#define EEPROM_START    500
+#define EEPROM_SIZE 768
+#define EEPROM_START 500
 #define EEPROM_START_IR 0
-#define EEPROM_START_2  10
-#define PLAYLIST_PATH   "/data/playlist.csv"
-#define SSIDS_PATH      "/data/wifi.csv"
-#define TMP_PATH        "/data/tmpfile.txt"
-#define INDEX_PATH      "/data/index.dat"
+#define EEPROM_START_2 10
+#define PLAYLIST_PATH "/data/playlist.csv"
+#define SSIDS_PATH "/data/wifi.csv"
+#define TMP_PATH "/data/tmpfile.txt"
+#define INDEX_PATH "/data/index.dat"
 
 #define PLAYLIST_SD_PATH "/data/playlistsd.csv"
-#define INDEX_SD_PATH    "/data/indexsd.dat"
+#define INDEX_SD_PATH "/data/indexsd.dat"
 
 #define REAL_PLAYL config.getMode() == PM_WEB ? PLAYLIST_PATH : PLAYLIST_SD_PATH
 #define REAL_INDEX config.getMode() == PM_WEB ? INDEX_PATH : INDEX_SD_PATH
 
-#define MAX_PLAY_MODE     1
 #define WEATHERKEY_LENGTH 58
-#define MDNS_LENGTH       24
+#define MDNS_LENGTH 24
 
 #if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
-  #define ESP_ARDUINO_3 1
+#define ESP_ARDUINO_3 1
 #endif
 
 #define CONFIG_VERSION 5
 
-enum playMode_e : uint8_t {
+enum playMode_e
+{
   PM_WEB = 0,
-  PM_SDCARD = 1
+  PM_SDCARD = 1,
+  PM_BLUETOOTH = 2,
+  PM_TV = 3,
+  PM_AUX = 4
 };
 
 void u8fix(char *src);
 
 void checkAllTasksStack();
 
-struct theme_t {
+struct theme_t
+{
   uint16_t background;
   uint16_t meta;
   uint16_t metabg;
@@ -53,12 +57,12 @@ struct theme_t {
   uint16_t div;
   uint16_t weather;
   uint16_t vumax;
-  uint16_t vumid;  // Módosítás: plussz változó. "wumeter"
+  uint16_t vumid; // Módosítás: plussz változó. "wumeter"
   uint16_t vumin;
   uint16_t clock;
   uint16_t clockbg;
   uint16_t seconds;
-  uint16_t nameday;  // Módosítás: plussz változó. "nameday"
+  uint16_t nameday; // Módosítás: plussz változó. "nameday"
   uint16_t dow;
   uint16_t date;
   uint16_t heap;
@@ -74,8 +78,9 @@ struct theme_t {
   uint16_t plcurrentfill;
   uint16_t playlist[5];
 };
-struct config_t {
-  uint16_t config_set;  //must be 4262
+struct config_t
+{
+  uint16_t config_set; // must be 4262
   uint16_t version;
   uint8_t volume;
   int8_t balance;
@@ -111,7 +116,7 @@ struct config_t {
   bool sdsnuffle;
   uint8_t volsteps;
   uint16_t encacc;
-  uint8_t play_mode;  //0 WEB, 1 SD
+  uint8_t play_mode; // 0 WEB, 1 SD
   uint8_t irtlp;
   bool btnpullup;
   uint16_t btnlongpress;
@@ -135,20 +140,22 @@ struct config_t {
   uint16_t abuff;
   bool telnet;
   bool watchdog;
-  bool nameday;  // Módosítás "nameday" új hely a struktúrában
+  bool nameday; // Módosítás "nameday" új hely a struktúrában
   uint16_t timeSyncInterval;
   uint16_t timeSyncIntervalRTC;
   uint16_t weatherSyncInterval;
 };
 
 #if IR_PIN != 255
-struct ircodes_t {
-  unsigned int ir_set;  //must be 4224
+struct ircodes_t
+{
+  unsigned int ir_set; // must be 4224
   uint64_t irVals[20][3];
 };
 #endif
 
-struct station_t {
+struct station_t
+{
   char name[BUFLEN];
   char url[BUFLEN];
   char title[BUFLEN];
@@ -156,12 +163,14 @@ struct station_t {
   int ovol;
 };
 
-struct neworkItem {
+struct neworkItem
+{
   char ssid[30];
   char password[40];
 };
 
-class Config {
+class Config
+{
 public:
   config_t store;
   station_t station;
@@ -176,8 +185,8 @@ public:
   uint8_t ssidsCount;
   uint16_t sleepfor;
   uint32_t sdResumePos;
-  uint16_t stopedSdStationId = -1;  // "módosítás" új változó a player.stop ad neki értéket.
-  bool isClockTTS;  // "módosítás" Ha aktív a clockTTS
+  uint16_t stopedSdStationId = -1; // "módosítás" új változó a player.stop ad neki értéket.
+  bool isClockTTS;                 // "módosítás" Ha aktív a clockTTS
   bool emptyFS;
   uint16_t vuRefLevel;
   uint16_t screensaverTicks;
@@ -191,7 +200,7 @@ public:
 
 public:
   Config() {};
-  //void save();
+  // void save();
 #if IR_PIN != 255
   void saveIR();
 #endif
@@ -217,7 +226,8 @@ public:
   void setTimeConf();
   bool saveWifiFromNextion(const char *post);
   void setSmartStart(uint8_t ss);
-  void setBitrateFormat(BitrateFormat fmt) {
+  void setBitrateFormat(BitrateFormat fmt)
+  {
     configFmt = fmt;
   }
   void initPlaylist();
@@ -225,13 +235,18 @@ public:
   void initSDPlaylist();
   void changeMode(int newmode = -1);
   uint16_t playlistLength();
-  uint16_t lastStation() {
+  uint16_t lastStation()
+  {
     return getMode() == PM_WEB ? store.lastStation : store.lastSdStation;
   }
-  void lastStation(uint16_t newstation) {
-    if (getMode() == PM_WEB) {
+  void lastStation(uint16_t newstation)
+  {
+    if (getMode() == PM_WEB)
+    {
       saveValue(&store.lastStation, newstation);
-    } else {
+    }
+    else
+    {
       saveValue(&store.lastSdStation, newstation);
     }
   }
@@ -245,8 +260,27 @@ public:
   void bootInfo();
   void doSleepW();
   void setSnuffle(bool sn);
-  uint8_t getMode() {
+  uint8_t getMode()
+  {
     return store.play_mode /* & 0b11*/;
+  }
+  const char *getModeName(uint8_t mode)
+  {
+    switch ((playMode_e)mode)
+    {
+    case PM_WEB:
+      return "yoRadio";
+    case PM_SDCARD:
+      return "SD Card";
+    case PM_BLUETOOTH:
+      return SRC_BT_NAME;
+    case PM_TV:
+      return SRC_AUX1_NAME;
+    case PM_AUX:
+      return SRC_AUX2_NAME;
+    default:
+      return "Unknown";
+    }
   }
   void initPlaylistMode();
   void reset();
@@ -269,52 +303,68 @@ public:
   char *ipToStr(IPAddress ip);
   bool prepareForPlaying(uint16_t stationId);
   void configPostPlaying(uint16_t stationId);
-  FS *SDPLFS() {
+  FS *SDPLFS()
+  {
     return _SDplaylistFS;
   }
-  bool isRTCFound() {
+  bool isRTCFound()
+  {
     return _rtcFound;
   };
-  template<typename T> size_t getAddr(const T *field) const {
+  template <typename T>
+  size_t getAddr(const T *field) const
+  {
     return (size_t)((const uint8_t *)field - (const uint8_t *)&store) + EEPROM_START;
   }
-  template<typename T> void saveValue(T *field, const T &value, bool commit = true, bool force = false) {
-    if (*field == value && !force) {
+  template <typename T>
+  void saveValue(T *field, const T &value, bool commit = true, bool force = false)
+  {
+    if (*field == value && !force)
+    {
       return;
     }
     *field = value;
     size_t address = getAddr(field);
     EEPROM.put(address, value);
-    if (commit) {
+    if (commit)
+    {
       EEPROM.commit();
     }
   }
 
-  void saveValue(char *field, const char *value, size_t N, bool commit = true, bool force = false) {
-    if (strcmp(field, value) == 0 && !force) {
+  void saveValue(char *field, const char *value, size_t N, bool commit = true, bool force = false)
+  {
+    if (strcmp(field, value) == 0 && !force)
+    {
       return;
     }
     strlcpy(field, value, N);
     size_t address = getAddr(field);
     size_t fieldlen = strlen(field);
-    for (size_t i = 0; i <= fieldlen; i++) {
+    for (size_t i = 0; i <= fieldlen; i++)
+    {
       EEPROM.write(address + i, field[i]);
     }
-    if (commit) {
+    if (commit)
+    {
       EEPROM.commit();
     }
   }
-  uint32_t getChipId() {
+  uint32_t getChipId()
+  {
     uint32_t chipId = 0;
-    for (int i = 0; i < 17; i = i + 8) {
+    for (int i = 0; i < 17; i = i + 8)
+    {
       chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
     }
     return chipId;
   }
 
 private:
-  template<class T> int eepromWrite(int ee, const T &value);
-  template<class T> int eepromRead(int ee, T &value);
+  template <class T>
+  int eepromWrite(int ee, const T &value);
+  template <class T>
+  int eepromRead(int ee, T &value);
   bool _bootDone;
   bool _rtcFound;
   FS *_SDplaylistFS;
@@ -324,7 +374,8 @@ private:
   void _setupVersion();
   void _initHW();
   bool _isFSempty();
-  uint16_t _randomStation() {
+  uint16_t _randomStation()
+  {
     randomSeed(esp_random() ^ millis());
     uint16_t station = random(1, store.countStation);
     return station;

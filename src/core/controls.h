@@ -1,76 +1,18 @@
-<<<<<<< HEAD
-#include "myoptions.h" // dla SOURCE_BTN
-
-// Nowe źródła audio
-enum AudioSource_e : uint8_t
-{
-    SRC_RADIO = 0,
-    SRC_BLUETOOTH = 1,
-    SRC_TV = 2,
-    SRC_AUX = 3,
-    SRC_MAX
-};
-
-extern AudioSource_e currentAudioSource;
-void handleSourceButton();
 #ifndef controls_h
 #define controls_h
 #include "common.h"
 
-#if IR_PIN != 255
-enum : uint8_t
-=======
-#ifndef controls_h
-#define controls_h
-#include <cstdint>
-#include "common.h"
-
-// --- Audio source enum and global ---
-enum AudioSource_e
-{
-    SRC_RADIO = 0,
-    SRC_BT,
-    SRC_TV,
-    SRC_AUX,
-    SRC_MAX
-};
-extern AudioSource_e currentAudioSource;
-
-#if IR_PIN != 255
-enum ir_codes_e
->>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
-{
-    IR_UP = 0,
-    IR_PREV = 1,
-    IR_PLAY = 2,
-    IR_NEXT = 3,
-    IR_DOWN = 4,
-    IR_1 = 5,
-    IR_2 = 6,
-    IR_3 = 7,
-    IR_4 = 8,
-    IR_5 = 9,
-    IR_6 = 10,
-    IR_7 = 11,
-    IR_8 = 12,
-    IR_9 = 13,
-    IR_AST = 14,
-    IR_0 = 15,
-    IR_HASH = 16
-};
+#if IR_PIN!=255
+enum : uint8_t { IR_UP=0, IR_PREV=1, IR_PLAY=2, IR_NEXT=3, IR_DOWN=4, IR_1=5, IR_2=6, IR_3=7, IR_4=8, IR_5=9, IR_6=10, IR_7=11, IR_8=12, IR_9=13, IR_AST=14, IR_0=15, IR_HASH=16 };
 #endif
 
-<<<<<<< HEAD
 boolean checklpdelay(int m, unsigned long &tstamp);
-=======
-bool checklpdelay(int m, unsigned long &tstamp);
->>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
 
 void initControls();
 void loopControls();
-#if (ENC_BTNL != 255 && ENC_BTNR != 255) || (ENC2_BTNL != 255 && ENC2_BTNR != 255)
+#if (ENC_BTNL!=255 && ENC_BTNR!=255) || (ENC2_BTNL!=255 && ENC2_BTNR!=255)
 class yoEncoder;
-void encodersLoop(yoEncoder *enc, bool first = true);
+void encodersLoop(yoEncoder *enc, bool first=true);
 #endif
 void encoder1Loop();
 void encoder2Loop();

@@ -39,7 +39,7 @@
 
 /* Imieniny (tylko wybrane języki)
    Dostępne: HU, PL, NL, GR, DE */
-// #define NAMEDAYS_FILE PL
+#define NAMEDAYS_FILE PL
 
 /* =========================================================
    4. DIODY / LED
@@ -53,8 +53,8 @@
    ========================================================= */
 
 /* Aktualizacja OTA z Arduino IDE */
-#define USE_OTA true
-#define OTA_PASS "12345987" // Hasło OTA (Zmień!)
+// #define USE_OTA true
+// #define OTA_PASS "12345987" // Hasło OTA (Zmień!)
 
 /* Autoryzacja panelu WWW */
 // #define HTTP_USER "admin"
@@ -118,16 +118,25 @@
    ========================================================= */
 
 /* Przycisk zmiany źródła audio
-   yoRadio / Bluetooth / TV / AUX */
-#define SOURCE_BTN 21
-<<<<<<< HEAD
-#define ENC_INTERNALPULLUP true
-=======
-#define SOURCE_BTN_INTERNALPULLUP true
->>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
+   yoRadio / SD / Bluetooth / AUX1 / AUX2 */
+#define SRC_BTN 42
 
 /* =========================================================
-   11. RTC – ZEGAR CZASU RZECZYWISTEGO
+   11. ŹRÓDŁA AUDIO
+   ========================================================= */
+
+/* Włączanie źródeł audio do przełączania */
+#define SRC_BT true   // Bluetooth
+#define SRC_AUX1 true // AUX1 S/PDIF
+#define SRC_AUX2 true // AUX2 RCA
+
+/* Nazwy źródeł audio */
+#define SRC_BT_NAME "Bluetooth"
+#define SRC_AUX1_NAME "AUX1 S/PDIF"
+#define SRC_AUX2_NAME "AUX2 RCA"
+
+/* =========================================================
+   12. RTC – ZEGAR CZASU RZECZYWISTEGO
    ========================================================= */
 
 // #define RTC_SCL     7
@@ -166,9 +175,9 @@
    15. POGODA
    ========================================================= */
 
-// #define WEATHER_FMT_SHORT   // Bez przewijania
+// #define WEATHER_FMT_SHORT // Bez przewijania
 // #define EXT_WEATHER true    // Pełny raport
-// #define WIND_SPEED_IN_KMH   // km/h zamiast m/s
+// #define WIND_SPEED_IN_KMH // km/h zamiast m/s
 
 /* =========================================================
    16. VU METER

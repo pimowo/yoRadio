@@ -2,14 +2,6 @@
 #define COMMON_H
 #pragma once
 
-<<<<<<< HEAD
-enum displayMode_e { PLAYER, VOL, STATIONS, NUMBERS, LOST, UPDATING, INFO, SETTINGS, TIMEZONE, WIFI, CLEAR, SLEEPING, SDCHANGE, SCREENSAVER, SCREENBLANK };
-enum pages_e      : uint8_t  { PG_PLAYER=0, PG_DIALOG=1, PG_PLAYLIST=2, PG_SCREENSAVER=3 };
-
-enum displayRequestType_e { BOOTSTRING, NEWMODE, CLOCK, NEWTITLE, NEWSTATION, NEXTSTATION, DRAWPLAYLIST, CLOSEPLAYLIST, DRAWVOL, DBITRATE, AUDIOINFO, SHOWVUMETER, DSPRSSI, SHOWWEATHER, NEWWEATHER, PSTOP, PSTART, DSP_START, WAITFORSD, SDFILEINDEX, NEWIP, NOPE, CLEARALLBITRATE};
-=======
-#include <cstdint>
-
 enum displayMode_e
 {
   PLAYER,
@@ -62,18 +54,12 @@ enum displayRequestType_e
   NOPE,
   CLEARALLBITRATE
 };
->>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
 struct requestParams_t
 {
   displayRequestType_e type;
   int payload;
 };
 
-<<<<<<< HEAD
-enum controlEvt_e { EVT_NONE=255, EVT_BTNLEFT=0, EVT_BTNCENTER=1, EVT_BTNRIGHT=2, EVT_ENCBTNB=3, EVT_BTNUP=4, EVT_BTNDOWN=5, EVT_ENC2BTNB=6, EVT_BTNMODE=7 };
-
-
-=======
 enum controlEvt_e
 {
   EVT_NONE = 255,
@@ -84,8 +70,8 @@ enum controlEvt_e
   EVT_BTNUP = 4,
   EVT_BTNDOWN = 5,
   EVT_ENC2BTNB = 6,
-  EVT_BTNMODE = 7
+  EVT_BTNMODE = 7,
+  EVT_BTNSOURCE = 8
 };
->>>>>>> f08ab32 (Initial commit: kod projektu yoRadio-PMW)
 
 #endif
