@@ -229,14 +229,6 @@ void Player::loop()
       break;
     }
 #endif
-    case PR_VUTONUS: // 2 másodpercenként hívja a timekeeper.
-    {
-      if (config.vuRefLevel > 10)
-      {
-        config.vuRefLevel -= 10; // A tárolt VU csúcs csökkentése, hogy ne ragadjon fenn.
-      }
-      break;
-    }
     case PR_BURL:
     {
 #ifdef MQTT_ROOT_TOPIC

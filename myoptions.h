@@ -114,7 +114,7 @@
 // #define ENC2_INTERNALPULLUP true
 
 /* =========================================================
-   10. PRZYCISKI FUNKCYJNE
+   10. PRZYCISK FUNKCYJNY
    ========================================================= */
 
 /* Przycisk zmiany źródła audio

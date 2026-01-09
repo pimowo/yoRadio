@@ -278,9 +278,6 @@ void NetServer::processQueue()
 #if defined(LCD_I2C) || defined(DSP_OLED)
         APPEND_GROUP("group_oled");
 #endif
-#if !defined(HIDE_VU) && !defined(DUMMYDISPLAY)
-        APPEND_GROUP("group_vu");
-#endif
         if (BRIGHTNESS_PIN != 255 || nxtn || dbgact)
         {
           APPEND_GROUP("group_brightness");
@@ -354,9 +351,9 @@ void NetServer::processQueue()
     case GETSYSTEM:
       sprintf(
           wsBuf,
-          "{\"sst\":%d,\"aif\":%d,\"vu\":%d,\"softr\":%d,\"vut\":%d,\"mdns\":\"%s\",\"ipaddr\":\"%s\", \"abuff\": %d, \"telnet\": %d, \"watchdog\": %d, "
+          "{\"sst\":%d,\"aif\":%d,\"softr\":%d,\"mdns\":\"%s\",\"ipaddr\":\"%s\", \"abuff\": %d, \"telnet\": %d, \"watchdog\": %d, "
           "\"nameday\": %d }", // "nameday"
-          config.store.smartstart != 2, config.store.audioinfo, config.store.vumeter, config.store.softapdelay, config.vuRefLevel, config.store.mdnsname,
+          config.store.smartstart != 2, config.store.audioinfo, config.store.softapdelay, config.store.mdnsname,
           config.ipToStr(WiFi.localIP()), config.store.abuff, config.store.telnet, config.store.watchdog, config.store.nameday);
       Serial.printf("netserver-> config.store.nameday %d \n", config.store.nameday);
       break;
@@ -946,7 +943,7 @@ void handleIndex(AsyncWebServerRequest *request)
         netserver.nsBuf[0] = '\0';
         snprintf(netserver.nsBuf, sizeof(netserver.nsBuf), "%s\t%s", request->arg("ssid").c_str(), request->arg("pass").c_str());
         request->redirect("/");
-        config.saveWifiFromNextion(netserver.nsBuf);
+        // saveWifiFromNextion removed
         return;
       }
       request->redirect("/");

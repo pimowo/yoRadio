@@ -56,9 +56,6 @@ struct theme_t
   uint16_t digit;
   uint16_t div;
   uint16_t weather;
-  uint16_t vumax;
-  uint16_t vumid; // Módosítás: plussz változó. "wumeter"
-  uint16_t vumin;
   uint16_t clock;
   uint16_t clockbg;
   uint16_t seconds;
@@ -95,7 +92,6 @@ struct config_t
   int8_t tzHour;
   int8_t tzMin;
   uint16_t timezoneOffset;
-  bool vumeter;
   uint8_t softapdelay;
   bool flipscreen;
   bool invertdisplay;
@@ -188,7 +184,6 @@ public:
   uint16_t stopedSdStationId = -1; // "módosítás" új változó a player.stop ad neki értéket.
   bool isClockTTS;                 // "módosítás" Ha aktív a clockTTS
   bool emptyFS;
-  uint16_t vuRefLevel;
   uint16_t screensaverTicks;
   uint16_t screensaverPlayingTicks;
   bool isScreensaver;

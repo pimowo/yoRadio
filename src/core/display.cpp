@@ -638,11 +638,6 @@ void Display::loop()
           _heapbar->setValue(player.inBufferFilled());
         }
         break;
-      case SHOWVUMETER:
-      {
-        // VU Meter removed
-        break;
-      }
       case SHOWWEATHER:
       {
         if (_weather)
@@ -742,11 +737,6 @@ void Display::loop()
   }
 
   dsp.loop();
-  /*
-  #if I2S_DOUT==255
-  player.computeVUlevel();
-  #endif
-*/
 }
 
 void Display::_setRSSI(int rssi)

@@ -302,7 +302,6 @@ char *Config::ipToStr(IPAddress ip)
 bool Config::prepareForPlaying(uint16_t stationId)
 {
   setDspOn(1);
-  vuRefLevel = 0;
   screensaverTicks = SCREENSAVERSTARTUPDELAY;
   screensaverPlayingTicks = SCREENSAVERSTARTUPDELAY;
   if (getMode() != PM_SDCARD)
@@ -450,9 +449,6 @@ void Config::loadTheme()
   theme.digit = color565(COLOR_DIGITS);
   theme.div = color565(COLOR_DIVIDER);
   theme.weather = color565(COLOR_WEATHER);
-  theme.vumax = color565(COLOR_VU_MAX);
-  theme.vumid = color565(COLOR_VU_MID); // Módosítás: plussz sor.
-  theme.vumin = color565(COLOR_VU_MIN);
   theme.nameday = color565(COLOR_NAMEDAY); // Módosítás: plussz sor.
   theme.clock = color565(COLOR_CLOCK);
   theme.clockbg = color565(COLOR_CLOCK_BG);
@@ -599,7 +595,6 @@ void Config::resetSystem(const char *val, uint8_t clientId)
   {
     saveValue(&store.smartstart, (uint8_t)2, false);
     saveValue(&store.audioinfo, false, false);
-    saveValue(&store.vumeter, false, false);
     saveValue(&store.softapdelay, (uint8_t)0, false);
     saveValue(&store.abuff, (uint16_t)(VS1053_CS == 255 ? 7 : 10), false);
     saveValue(&store.telnet, true);
@@ -697,7 +692,6 @@ void Config::setDefaults()
   store.tzMin = 0;
   store.timezoneOffset = 0;
 
-  store.vumeter = false;
   store.softapdelay = 0;
   store.flipscreen = false;
   store.invertdisplay = false;
@@ -832,7 +826,6 @@ uint8_t Config::setLastSSID(uint8_t val)
 
 void Config::setTitle(const char *title)
 {
-  vuRefLevel = 0;
   memset(config.station.title, 0, BUFLEN);
   strlcpy(config.station.title, title, BUFLEN);
   u8fix(config.station.title);
@@ -1230,7 +1223,6 @@ void Config::bootInfo()
   }
   BOOTLOG("audioinfo:\t%s", store.audioinfo ? "true" : "false");
   BOOTLOG("smartstart:\t%d", store.smartstart);
-  BOOTLOG("vumeter:\t%s", store.vumeter ? "true" : "false");
   BOOTLOG("softapdelay:\t%d", store.softapdelay);
   BOOTLOG("flipscreen:\t%s", store.flipscreen ? "true" : "false");
   BOOTLOG("invertdisplay:\t%s", store.invertdisplay ? "true" : "false");

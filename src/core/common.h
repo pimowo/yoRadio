@@ -41,7 +41,6 @@ enum displayRequestType_e
   DRAWVOL,
   DBITRATE,
   AUDIOINFO,
-  SHOWVUMETER,
   DSPRSSI,
   SHOWWEATHER,
   NEWWEATHER,
