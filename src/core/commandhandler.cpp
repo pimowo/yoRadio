@@ -322,31 +322,6 @@ bool CommandHandler::exec(const char *command, const char *value, uint8_t cid)
     config.saveValue(&config.store.skipPlaylistUpDown, static_cast<bool>(atoi(value)));
     return true;
   }
-  if (strEquals(command, "showweather"))
-  {
-    config.setShowweather(static_cast<bool>(atoi(value)));
-    return true;
-  }
-  if (strEquals(command, "lat"))
-  {
-    config.saveValue(config.store.weatherlat, value, 10, false);
-    return true;
-  }
-  if (strEquals(command, "lon"))
-  {
-    config.saveValue(config.store.weatherlon, value, 10, false);
-    return true;
-  }
-  if (strEquals(command, "key"))
-  {
-    config.setWeatherKey(value);
-    return true;
-  }
-  if (strEquals(command, "wint"))
-  {
-    config.saveValue(&config.store.weatherSyncInterval, static_cast<uint16_t>(atoi(value)));
-    return true;
-  }
   if (strEquals(command, "volume"))
   { // Ha weben állítom a hangerő csúszkát itt kapja meg az értéket.
     player.setVol(static_cast<uint8_t>(atoi(value)));

@@ -48,7 +48,7 @@ public:
   uint16_t height();
 
 private:
-  ScrollWidget *_meta, *_title1, *_plcurrent, *_weather, *_title2;
+  ScrollWidget *_meta, *_title1, *_plcurrent, *_title2;
   PlayListWidget *_plwidget;
   BitrateWidget *_fullbitrate;
   FillWidget *_metabackground, *_plbackground;

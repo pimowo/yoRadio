@@ -213,9 +213,6 @@ void Display::_buildPager()
   _rssi = new TextWidget(rssiConf, 20, false, config.theme.rssi, config.theme.background);
 #endif
   _nums->init(numConf, 10, false, config.theme.digit, config.theme.background);
-#ifndef HIDE_WEATHER
-  _weather = new ScrollWidget("\007", weatherConf, config.theme.weather, config.theme.background);
-#endif
 
   if (_volbar)
   {
@@ -248,10 +245,7 @@ void Display::_buildPager()
   {
     pages[PG_PLAYER]->addWidget(_title2);
   }
-  if (_weather)
-  {
-    pages[PG_PLAYER]->addWidget(_weather);
-  }
+
 #if BITRATE_FULL
   _fullbitrate = new BitrateWidget(fullbitrateConf, config.theme.bitrate, config.theme.background);
   pages[PG_PLAYER]->addWidget(_fullbitrate);
@@ -342,15 +336,6 @@ void Display::_start()
   if (_heapbar)
   {
     _heapbar->lock(!config.store.audioinfo);
-  }
-
-  if (_weather)
-  {
-    _weather->lock(!config.store.showweather);
-  }
-  if (_weather && config.store.showweather)
-  {
-    _weather->setText(LANG::const_getWeather);
   }
 
   if (_rssi)
@@ -537,18 +522,10 @@ void Display::_layoutChange(bool played)
     {
       _clock->moveTo(clockMove);
     }
-    if (_weather)
-    {
-      _weather->moveTo(weatherMove);
-    }
     //_clock->moveBack();
   }
   else
   {
-    if (_weather)
-    {
-      _weather->moveBack();
-    }
     _clock->moveBack();
   }
 }
@@ -638,38 +615,7 @@ void Display::loop()
           _heapbar->setValue(player.inBufferFilled());
         }
         break;
-      case SHOWWEATHER:
-      {
-        if (_weather)
-        {
-          _weather->lock(!config.store.showweather);
-        }
-        if (!config.store.showweather)
-        {
-#ifndef HIDE_IP
-          if (_volip)
-          {
-            _volip->setText(config.ipToStr(WiFi.localIP()), iptxtFmt);
-          }
-#endif
-        }
-        else
-        {
-          if (_weather)
-          {
-            _weather->setText(LANG::const_getWeather);
-          }
-        }
-        break;
-      }
-      case NEWWEATHER:
-      {
-        if (_weather && timekeeper.weatherBuf)
-        {
-          _weather->setText(timekeeper.weatherBuf);
-        }
-        break;
-      }
+
       case BOOTSTRING:
       {
         if (_bootstring)

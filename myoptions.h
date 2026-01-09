@@ -163,14 +163,6 @@
 // #define CLOCKFONT VT_DIGI_OLD // Stara czcionka 7-segmentowa
 
 /* =========================================================
-   15. POGODA
-   ========================================================= */
-
-// #define WEATHER_FMT_SHORT // Bez przewijania
-// #define EXT_WEATHER true    // Pełny raport
-// #define WIND_SPEED_IN_KMH // km/h zamiast m/s
-
-/* =========================================================
    17. LISTA STACJI
    ========================================================= */
 

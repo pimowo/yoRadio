@@ -23,7 +23,6 @@
 #define REAL_PLAYL config.getMode() == PM_WEB ? PLAYLIST_PATH : PLAYLIST_SD_PATH
 #define REAL_INDEX config.getMode() == PM_WEB ? INDEX_PATH : INDEX_SD_PATH
 
-#define WEATHERKEY_LENGTH 58
 #define MDNS_LENGTH 24
 
 #if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
@@ -55,7 +54,6 @@ struct theme_t
   uint16_t title2;
   uint16_t digit;
   uint16_t div;
-  uint16_t weather;
   uint16_t clock;
   uint16_t clockbg;
   uint16_t seconds;
@@ -102,10 +100,6 @@ struct config_t
   uint8_t contrast;
   char sntp1[35];
   char sntp2[35];
-  bool showweather;
-  char weatherlat[10];
-  char weatherlon[10];
-  char weatherkey[WEATHERKEY_LENGTH];
   uint16_t _reserved;
   uint16_t lastSdStation;
   bool sdsnuffle;
@@ -138,7 +132,6 @@ struct config_t
   bool nameday; // Módosítás "nameday" új hely a struktúrában
   uint16_t timeSyncInterval;
   uint16_t timeSyncIntervalRTC;
-  uint16_t weatherSyncInterval;
 };
 
 #if IR_PIN != 255
@@ -283,8 +276,6 @@ public:
   void setScreensaverPlayingTimeout(uint16_t val);
   void setScreensaverPlayingBlank(bool val);
   void setSntpOne(const char *val);
-  void setShowweather(bool val);
-  void setWeatherKey(const char *val);
   void setSDpos(uint32_t val);
 #if IR_PIN != 255
   void setIrBtn(int val);

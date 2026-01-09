@@ -371,11 +371,7 @@ void NetServer::processQueue()
           wsBuf, "{\"tzh\":%d,\"tzm\":%d,\"sntp1\":\"%s\",\"sntp2\":\"%s\", \"timeint\":%d,\"timeintrtc\":%d}", config.store.tzHour, config.store.tzMin,
           config.store.sntp1, config.store.sntp2, config.store.timeSyncInterval, config.store.timeSyncIntervalRTC);
       break;
-    case GETWEATHER:
-      sprintf(
-          wsBuf, "{\"wen\":%d,\"wlat\":\"%s\",\"wlon\":\"%s\",\"wkey\":\"%s\",\"wint\":%d}", config.store.showweather, config.store.weatherlat,
-          config.store.weatherlon, config.store.weatherkey, config.store.weatherSyncInterval);
-      break;
+
     case GETCONTROLS:
       sprintf(
           wsBuf, "{\"vols\":%d,\"enca\":%d,\"irtl\":%d,\"skipup\":%d}", config.store.volsteps, config.store.encacc, config.store.irtlp,

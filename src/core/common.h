@@ -42,8 +42,6 @@ enum displayRequestType_e
   DBITRATE,
   AUDIOINFO,
   DSPRSSI,
-  SHOWWEATHER,
-  NEWWEATHER,
   PSTOP,
   PSTART,
   DSP_START,

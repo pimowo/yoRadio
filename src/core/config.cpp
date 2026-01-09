@@ -157,7 +157,6 @@ void Config::_setupVersion()
     saveValue(&store.nameday, true);                     // Módosítás új sor "nameday"
     saveValue(&store.timeSyncInterval, (uint16_t)60);    // min
     saveValue(&store.timeSyncIntervalRTC, (uint16_t)24); // hours
-    saveValue(&store.weatherSyncInterval, (uint16_t)30); // min
   default:
     break;
   }
@@ -448,7 +447,6 @@ void Config::loadTheme()
   theme.title2 = color565(COLOR_SNG_TITLE_2);
   theme.digit = color565(COLOR_DIGITS);
   theme.div = color565(COLOR_DIVIDER);
-  theme.weather = color565(COLOR_WEATHER);
   theme.clock = color565(COLOR_CLOCK);
   theme.clockbg = color565(COLOR_CLOCK_BG);
   theme.seconds = color565(COLOR_SECONDS);
@@ -564,18 +562,6 @@ void Config::setSntpOne(const char *val)
     saveValue(config.store.sntp1, val, 35);
   }
 }
-void Config::setShowweather(bool val)
-{
-  config.saveValue(&config.store.showweather, val);
-  timekeeper.forceWeather = true;
-  display.putRequest(SHOWWEATHER);
-}
-void Config::setWeatherKey(const char *val)
-{
-  saveValue(store.weatherkey, val, WEATHERKEY_LENGTH);
-  display.putRequest(NEWMODE, CLEAR);
-  display.putRequest(NEWMODE, PLAYER);
-}
 
 #if IR_PIN != 255
 void Config::setIrBtn(int val)
@@ -642,19 +628,7 @@ void Config::resetSystem(const char *val, uint8_t clientId)
     netserver.requestOnChange(GETTIMEZONE, clientId);
     return;
   }
-  if (strcmp(val, "weather") == 0)
-  {
-    saveValue(&store.showweather, false, false);
-    saveValue(store.weatherlat, "55.7512", 10, false);
-    saveValue(store.weatherlon, "37.6184", 10, false);
-    saveValue(store.weatherkey, "", WEATHERKEY_LENGTH);
-    saveValue(&store.weatherSyncInterval, (uint16_t)30);
-    // network.trueWeather=false;
-    display.putRequest(NEWMODE, CLEAR);
-    display.putRequest(NEWMODE, PLAYER);
-    netserver.requestOnChange(GETWEATHER, clientId);
-    return;
-  }
+
   if (strcmp(val, "controls") == 0)
   {
     saveValue(&store.volsteps, (uint8_t)1, false);
@@ -702,10 +676,6 @@ void Config::setDefaults()
   store.contrast = 55;
   strlcpy(store.sntp1, "pool.ntp.org", 35);
   strlcpy(store.sntp2, "1.ru.pool.ntp.org", 35);
-  store.showweather = false;
-  strlcpy(store.weatherlat, "55.7512", 10);
-  strlcpy(store.weatherlon, "37.6184", 10);
-  strlcpy(store.weatherkey, "", WEATHERKEY_LENGTH);
   store._reserved = 0;
   store.lastSdStation = 0;
   store.sdsnuffle = false;
@@ -738,7 +708,6 @@ void Config::setDefaults()
   store.nameday = true;           // Módosítás "nameday" kezdő érték.
   store.timeSyncInterval = 60;    // min
   store.timeSyncIntervalRTC = 24; // hour
-  store.weatherSyncInterval = 30; // min
   eepromWrite(EEPROM_START, store);
 }
 
@@ -1225,7 +1194,6 @@ void Config::bootInfo()
   BOOTLOG("softapdelay:\t%d", store.softapdelay);
   BOOTLOG("flipscreen:\t%s", store.flipscreen ? "true" : "false");
   BOOTLOG("invertdisplay:\t%s", store.invertdisplay ? "true" : "false");
-  BOOTLOG("showweather:\t%s", store.showweather ? "true" : "false");
   BOOTLOG("buttons:\tleft=%d, center=%d, right=%d, up=%d, down=%d, mode=%d, pullup=%s",
           BTN_LEFT, BTN_CENTER, BTN_RIGHT, BTN_UP, BTN_DOWN, BTN_MODE, BTN_INTERNALPULLUP ? "true" : "false");
   BOOTLOG("encoders:\tl1=%d, b1=%d, r1=%d, pullup=%s, l2=%d, b2=%d, r2=%d, pullup=%s",
