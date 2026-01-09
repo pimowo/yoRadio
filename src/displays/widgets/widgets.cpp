@@ -930,24 +930,6 @@ void ClockWidget::_printClock(bool force)
   {
     _fb->display();
   }
-// Mai névnap letöltése - csak ha engedélyezve van.
-#ifdef NAMEDAYS_FILE
-  if (config.store.nameday)
-  {
-    static uint32_t lastRotation = 0;
-    if (millis() - lastRotation >= 4000)
-    {
-      getNamedayUpper(_namedayBuf, sizeof(_namedayBuf));
-      if (!config.isScreensaver && strcmp(_oldNamedayBuf, _namedayBuf) != 0)
-      {
-        strlcpy(_oldNamedayBuf, _namedayBuf, sizeof(_oldNamedayBuf));
-        _namedaywidth = strlen(_namedayBuf) * CHARWIDTH * namedayConf.textsize; // csak változáskor számoljuk újra
-        _printNameday();
-      }
-      lastRotation = millis();
-    }
-  }
-#endif // NAMEDAYS_FILE
 }
 
 void ClockWidget::_formatDate()
@@ -984,65 +966,6 @@ void ClockWidget::_formatDate()
 
 #endif
 }
-
-/*********************  A névnapok kiírása. *****************************/
-#ifdef NAMEDAYS_FILE
-void ClockWidget::getNamedayUpper(char *dest, size_t len)
-{ // commongfx.h - ban van deklarálva.
-  const char *nameday = getNameDay(network.timeinfo.tm_mon + 1, network.timeinfo.tm_mday);
-  char tmp[32];
-  strlcpy(tmp, nameday, sizeof(tmp));
-  for (int i = 0; tmp[i]; i++)
-  {
-    tmp[i] = toupper((unsigned char)tmp[i]);
-  }
-  strlcpy(dest, utf8To(tmp, true), len);
-}
-
-void ClockWidget::_printNameday()
-{
-  uint16_t nameday_top;
-  memcpy_P(&_namedayConf, &namedayConf, sizeof(WidgetConfig));
-#if DSP_MODEL == DSP_ILI9341
-  nameday_top = _namedayConf.top + 14;
-#else
-  nameday_top = _namedayConf.top + 22;
-#endif
-  if (config.store.nameday)
-  {
-    // Rajzold le a nyelvfüggő "Névnap:" szót fehér színnel.
-    dsp.setTextColor(config.theme.date, config.theme.background);
-    dsp.setCursor(_namedayConf.left, _namedayConf.top); // egy sorral feljebb
-#if NAMEDAYS_FILE == GR                                 // Görög nyevnél túl hosszú, ezért 1- es méret.
-    dsp.setTextSize(1);
-#else
-    dsp.setTextSize(_namedayConf.textsize);
-#endif
-    if (!config.isScreensaver)
-    {
-      // Serial.printf("Widget.cpp->nameday_label: %s \n", nameday_label);
-      // Serial.printf("Widget.cpp->utf8To(nameday_label, false): %s \n", utf8To(nameday_label, false));
-      dsp.print(utf8To(nameday_label, false)); // <<< Itt már a headerből jön "nameday"
-      // Csak a neveket rajzolja arany színnel
-      dsp.setTextColor(config.theme.nameday, config.theme.background); // szürke 0x8410
-      // Névnap nevének területének törlése a kijelzőről.
-      int clearWidth = max(_oldnamedaywidth, _namedaywidth); // A régi és az új név közül a szélesebb szélessége.
-      dsp.fillRect(_namedayConf.left, nameday_top, clearWidth, CHARHEIGHT * _namedayConf.textsize, config.theme.background);
-      dsp.setCursor(_namedayConf.left, nameday_top);
-      dsp.setTextSize(_namedayConf.textsize);
-      dsp.print(_namedayBuf);
-      strlcpy(_oldNamedayBuf, _namedayBuf, sizeof(_namedayBuf));
-      _oldnamedaywidth = _namedaywidth;
-    }
-  }
-}
-
-void ClockWidget ::clearNameday()
-{
-  int clearWidth = max(_oldnamedaywidth, _namedaywidth); // A régi és az új név közül a szélesebb szélessége.
-  dsp.fillRect(namedayConf.left, namedayConf.top, clearWidth, (CHARHEIGHT * namedayConf.textsize * 2) + 5, config.theme.background);
-}
-#endif // NAMEDAYS_FILE
 
 void ClockWidget::_clearClock()
 {

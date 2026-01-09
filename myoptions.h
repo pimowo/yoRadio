@@ -37,10 +37,6 @@
    Dostępne: HU NL PL RU EN GR SK DE */
 #define L10N_LANGUAGE PL
 
-/* Imieniny (tylko wybrane języki)
-   Dostępne: HU, PL, NL, GR, DE */
-#define NAMEDAYS_FILE PL
-
 /* =========================================================
    4. DIODY / LED
    ========================================================= */

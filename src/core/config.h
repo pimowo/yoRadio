@@ -59,7 +59,6 @@ struct theme_t
   uint16_t clock;
   uint16_t clockbg;
   uint16_t seconds;
-  uint16_t nameday; // Módosítás: plussz változó. "nameday"
   uint16_t dow;
   uint16_t date;
   uint16_t heap;

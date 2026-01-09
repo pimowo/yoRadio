@@ -449,7 +449,6 @@ void Config::loadTheme()
   theme.digit = color565(COLOR_DIGITS);
   theme.div = color565(COLOR_DIVIDER);
   theme.weather = color565(COLOR_WEATHER);
-  theme.nameday = color565(COLOR_NAMEDAY); // Módosítás: plussz sor.
   theme.clock = color565(COLOR_CLOCK);
   theme.clockbg = color565(COLOR_CLOCK_BG);
   theme.seconds = color565(COLOR_SECONDS);

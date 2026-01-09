@@ -1,4 +1,4 @@
-//v0.9.676 Módosítva!
+// v0.9.676 Módosítva!
 // clang-format off
 /*************************************************************************************
     ILI9488 480X320 displays configuration file.
@@ -52,7 +52,6 @@ const WidgetConfig apPass2Conf    PROGMEM = {TFT_FRAMEWDT, 205, 3, WA_CENTER};
 const WidgetConfig clockConf      PROGMEM = {10, 212, 2, WA_RIGHT}; // {jobb oldali távolság, top, fontsize}
 const WidgetConfig vuConf         PROGMEM = {35, 258, 1, WA_CENTER}; // center fektetett, "align" nincs használva
 const WidgetConfig bootWdtConf    PROGMEM = {0, 216, 1, WA_CENTER};
-const WidgetConfig namedayConf    PROGMEM = { TFT_FRAMEWDT, 175, 2, WA_LEFT };  // Módosítás új sor "nameday"
 const WidgetConfig dateConf       PROGMEM = { TFT_FRAMEWDT, 226, 1, WA_LEFT }; // Módosítás új sor "date"
 const ProgressConfig bootPrgConf  PROGMEM = {90, 14, 4};
 

@@ -1,27 +1,30 @@
-//Módosítva! v0.9.710
+// Módosítva! v0.9.710
 #ifndef widgets_h
 #define widgets_h
 #if DSP_MODEL != DSP_DUMMY
-  #include "widgetsconfig.h"
+#include "widgetsconfig.h"
 
-  #ifndef DSP_LCD
-    #define CHARWIDTH  6
-    #define CHARHEIGHT 8
-  #else
-    #define CHARWIDTH  1
-    #define CHARHEIGHT 1
-  #endif
+#ifndef DSP_LCD
+#define CHARWIDTH 6
+#define CHARHEIGHT 8
+#else
+#define CHARWIDTH 1
+#define CHARHEIGHT 1
+#endif
 
 class psFrameBuffer;
 
-class Widget {
+class Widget
+{
 public:
-  Widget() {
+  Widget()
+  {
     _active = false;
   }
   virtual ~Widget() {}
   virtual void loop() {}
-  virtual void init(WidgetConfig conf, uint16_t fgcolor, uint16_t bgcolor) {
+  virtual void init(WidgetConfig conf, uint16_t fgcolor, uint16_t bgcolor)
+  {
     _config = conf;
     _fgcolor = fgcolor;
     _bgcolor = bgcolor;
@@ -30,54 +33,70 @@ public:
     _backMove.y = _config.top;
     _moved = _locked = false;
   }
-  void setAlign(WidgetAlign align) {
+  void setAlign(WidgetAlign align)
+  {
     _config.align = align;
   }
-  void setActive(bool act, bool clr = false) {
+  void setActive(bool act, bool clr = false)
+  {
     _active = act;
-    if (_active && !_locked) {
+    if (_active && !_locked)
+    {
       _draw();
     }
-    if (clr && !_locked) {
+    if (clr && !_locked)
+    {
       _clear();
     }
   }
-  void lock(bool lck = true) {
+  void lock(bool lck = true)
+  {
     _locked = lck;
-    if (_locked) {
+    if (_locked)
+    {
       _reset();
     }
-    if (_locked && _active) {
+    if (_locked && _active)
+    {
       _clear();
     }
   }
-  void unlock() {
+  void unlock()
+  {
     _locked = false;
   }
-  bool locked() {
+  bool locked()
+  {
     return _locked;
   }
-  void moveTo(MoveConfig mv) {
-    if (mv.width < 0) {
+  void moveTo(MoveConfig mv)
+  {
+    if (mv.width < 0)
+    {
       return;
     }
     _moved = true;
-    if (_active && !_locked) {
+    if (_active && !_locked)
+    {
       _clear();
     }
     _config.left = mv.x;
     _config.top = mv.y;
-    if (mv.width > 0) {
+    if (mv.width > 0)
+    {
       _width = mv.width;
     }
     _reset();
     _draw();
   }
-  void moveBack() {
-    if (!_moved) {
+  void moveBack()
+  {
+    if (!_moved)
+    {
       return;
     }
-    if (_active && !_locked) {
+    if (_active && !_locked)
+    {
       _clear();
     }
     _config.left = _backMove.x;
@@ -98,10 +117,12 @@ protected:
   virtual void _reset() {}
 };
 
-class TextWidget : public Widget {
+class TextWidget : public Widget
+{
 public:
   TextWidget() {}
-  TextWidget(WidgetConfig wconf, uint16_t buffsize, bool uppercase, uint16_t fgcolor, uint16_t bgcolor) {
+  TextWidget(WidgetConfig wconf, uint16_t buffsize, bool uppercase, uint16_t fgcolor, uint16_t bgcolor)
+  {
     init(wconf, buffsize, uppercase, fgcolor, bgcolor);
   }
   ~TextWidget();
@@ -110,7 +131,8 @@ public:
   void setText(const char *txt);
   void setText(int val, const char *format);
   void setText(const char *txt, const char *format);
-  bool uppercase() {
+  bool uppercase()
+  {
     return _uppercase;
   }
 
@@ -127,10 +149,12 @@ protected:
   void _charSize(uint8_t textsize, uint8_t &width, uint16_t &height);
 };
 
-class FillWidget : public Widget {
+class FillWidget : public Widget
+{
 public:
   FillWidget() {}
-  FillWidget(FillConfig conf, uint16_t bgcolor) {
+  FillWidget(FillConfig conf, uint16_t bgcolor)
+  {
     init(conf, bgcolor);
   }
   using Widget::init;
@@ -142,7 +166,8 @@ protected:
   void _draw();
 };
 
-class ScrollWidget : public TextWidget {
+class ScrollWidget : public TextWidget
+{
 public:
   ScrollWidget() {}
   ScrollWidget(const char *separator, ScrollConfig conf, uint16_t fgcolor, uint16_t bgcolor);
@@ -176,10 +201,12 @@ private:
   void _reset();
 };
 
-class SliderWidget : public Widget {
+class SliderWidget : public Widget
+{
 public:
   SliderWidget() {}
-  SliderWidget(FillConfig conf, uint16_t fgcolor, uint16_t bgcolor, uint32_t maxval, uint16_t oucolor = 0) {
+  SliderWidget(FillConfig conf, uint16_t fgcolor, uint16_t bgcolor, uint32_t maxval, uint16_t oucolor = 0)
+  {
     init(conf, fgcolor, bgcolor, maxval, oucolor);
   }
   using Widget::init;
@@ -196,30 +223,33 @@ protected:
   void _reset();
 };
 
-class VuWidget : public Widget {
+class VuWidget : public Widget
+{
 public:
-  VuWidget() {}  // Módosítás: vumidcolor plussz paraméter.
-  VuWidget(WidgetConfig wconf, VUBandsConfig bands, uint16_t vumaxcolor, uint16_t vumidcolor, uint16_t vumincolor, uint16_t bgcolor) {
+  VuWidget() {} // Módosítás: vumidcolor plussz paraméter.
+  VuWidget(WidgetConfig wconf, VUBandsConfig bands, uint16_t vumaxcolor, uint16_t vumidcolor, uint16_t vumincolor, uint16_t bgcolor)
+  {
     init(wconf, bands, vumaxcolor, vumidcolor, vumincolor, bgcolor);
   }
-  ~VuWidget();  // Módosítás: vumidcolor plussz paraméter.
+  ~VuWidget(); // Módosítás: vumidcolor plussz paraméter.
   using Widget::init;
   void init(WidgetConfig wconf, VUBandsConfig bands, uint16_t vumaxcolor, uint16_t vumidcolor, uint16_t vumincolor, uint16_t bgcolor);
   void loop();
-  static void setLabelsDrawn(bool value);  // Módosítás
-  static bool isLabelsDrawn();             // Módosítás
+  static void setLabelsDrawn(bool value); // Módosítás
+  static bool isLabelsDrawn();            // Módosítás
 protected:
-  #if !defined(DSP_LCD) && !defined(DSP_OLED)
+#if !defined(DSP_LCD) && !defined(DSP_OLED)
   Canvas *_canvas;
-  #endif
-  static bool _labelsDrawn;  // Módosítás új változó.
+#endif
+  static bool _labelsDrawn; // Módosítás új változó.
   VUBandsConfig _bands;
-  uint16_t _vumaxcolor, _vumidcolor, _vumincolor;  // Módosítás: plussz _vumidcolor
+  uint16_t _vumaxcolor, _vumidcolor, _vumincolor; // Módosítás: plussz _vumidcolor
   void _draw();
   void _clear();
 };
 
-class NumWidget : public TextWidget {
+class NumWidget : public TextWidget
+{
 public:
   using Widget::init;
   void init(WidgetConfig wconf, uint16_t buffsize, bool uppercase, uint16_t fgcolor, uint16_t bgcolor);
@@ -231,14 +261,17 @@ protected:
   void _draw();
 };
 
-class ProgressWidget : public TextWidget {
+class ProgressWidget : public TextWidget
+{
 public:
   ProgressWidget() {}
-  ProgressWidget(WidgetConfig conf, ProgressConfig pconf, uint16_t fgcolor, uint16_t bgcolor) {
+  ProgressWidget(WidgetConfig conf, ProgressConfig pconf, uint16_t fgcolor, uint16_t bgcolor)
+  {
     init(conf, pconf, fgcolor, bgcolor);
   }
   using Widget::init;
-  void init(WidgetConfig conf, ProgressConfig pconf, uint16_t fgcolor, uint16_t bgcolor) {
+  void init(WidgetConfig conf, ProgressConfig pconf, uint16_t fgcolor, uint16_t bgcolor)
+  {
     TextWidget::init(conf, pconf.width, false, fgcolor, bgcolor);
     _speed = pconf.speed;
     _width = pconf.width;
@@ -255,45 +288,45 @@ private:
   bool _checkDelay(int m, uint32_t &tstamp);
 };
 
-class ClockWidget : public Widget {
+class ClockWidget : public Widget
+{
 public:
   using Widget::init;
   void init(WidgetConfig wconf, uint16_t fgcolor, uint16_t bgcolor);
   void draw(bool force = false);
-  uint8_t textsize() {
+  uint8_t textsize()
+  {
     return _config.textsize;
   }
-  void clear() {
+  void clear()
+  {
     _clearClock();
   }
-  #ifdef NAMEDAYS_FILE
-  void clearNameday();
-  #endif
-  inline uint16_t dateSize() {
+  inline uint16_t dateSize()
+  {
     return _space + _dateheight;
   }
-  inline uint16_t clockWidth() {
+  inline uint16_t clockWidth()
+  {
     return _clockwidth;
   }
 
 private:
-  #ifndef DSP_LCD
+#ifndef DSP_LCD
   Adafruit_GFX &getRealDsp();
-  #endif
+#endif
 protected:
   char _timebuffer[20] = "00:00";
-  char _tmp[38], _datebuf[38];  // Módosítva 38-ra v7.4
+  char _tmp[38], _datebuf[38]; // Módosítva 38-ra v7.4
   uint8_t _superfont;
   uint16_t _clockleft, _clockwidth, _timewidth, _dotsleft, _linesleft;
   uint8_t _clockheight, _timeheight, _dateheight, _space;
-  char _namedayBuf[30], _oldNamedayBuf[30];                   // Módosítás "nameday"
-  uint16_t _namedaywidth, _oldnamedayleft, _oldnamedaywidth;  //Módosítás "nameday"
   uint16_t _forceflag = 0;
   bool dots = true;
   bool _fullclock;
   psFrameBuffer *_fb = nullptr;
-  WidgetConfig _namedayConf;  //"nameday"
-  WidgetConfig _dateConf;     // Módosítás új sor.
+  WidgetConfig _namedayConf; //"nameday"
+  WidgetConfig _dateConf;    // Módosítás új sor.
   void _draw();
   void _clear();
   void _reset();
@@ -302,20 +335,18 @@ protected:
   void _clearClock();
   void _formatDate();
 
-  #ifdef NAMEDAYS_FILE
-  void _printNameday();                          // Módosítás új sor. "nameday"
-  void getNamedayUpper(char *dest, size_t len);  // Módosítás "nameday"
-  #endif
   bool _getTime();
   uint16_t _left();
   uint16_t _top();
   void _begin();
 };
 
-class BitrateWidget : public Widget {
+class BitrateWidget : public Widget
+{
 public:
   BitrateWidget() {}
-  BitrateWidget(BitrateConfig bconf, uint16_t fgcolor, uint16_t bgcolor) {
+  BitrateWidget(BitrateConfig bconf, uint16_t fgcolor, uint16_t bgcolor)
+  {
     init(bconf, fgcolor, bgcolor);
   }
   ~BitrateWidget() {}
@@ -335,15 +366,18 @@ protected:
   void _charSize(uint8_t textsize, uint8_t &width, uint16_t &height);
 };
 
-class PlayListWidget : public Widget {
+class PlayListWidget : public Widget
+{
 public:
   using Widget::init;
   void init(ScrollWidget *current);
   void drawPlaylist(uint16_t currentItem);
-  inline uint16_t itemHeight() {
+  inline uint16_t itemHeight()
+  {
     return _plItemHeight;
   }
-  inline uint16_t currentTop() {
+  inline uint16_t currentTop()
+  {
     return _plYStart + _plCurrentPos * _plItemHeight;
   }
 

@@ -15,7 +15,6 @@
 #define COLOR_CLOCK 255, 255, 255
 #define COLOR_CLOCK_BG 28, 28, 28
 #define COLOR_SECONDS 255, 255, 255
-#define COLOR_NAMEDAY 231, 211, 90 // A plus entry is the font color of the name day names.
 #define COLOR_DATE 255, 255, 255
 #define COLOR_HEAP 41, 40, 41
 #define COLOR_BUFFER 4, 122, 255
