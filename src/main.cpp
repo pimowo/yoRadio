@@ -14,9 +14,6 @@
 //#include "core/mqtt.h"
 #include "core/optionschecker.h"
 #include "core/timekeeper.h"
-#ifdef USE_NEXTION
-#include "displays/nextion.h"
-#endif
 #include "core/audiohandlers.h"   //"audio_change"
 #if USE_OTA
 #if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)

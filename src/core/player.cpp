@@ -9,9 +9,6 @@
 #include "timekeeper.h"
 #include "../displays/tools/l10n.h"
 #include "../pluginsManager/pluginsManager.h"
-#ifdef USE_NEXTION
-  #include "../displays/nextion.h"
-#endif
 Player player;
 QueueHandle_t playerQueue;
 
@@ -118,9 +115,6 @@ void Player::_stop(bool alreadyStopped) {
   }
   config.station.bitrate = 0;
   config.setBitrateFormat(BF_UNKNOWN);
-#ifdef USE_NEXTION
-  nextion.bitrate(config.station.bitrate);
-#endif
   if (!alreadyStopped) {
     stopSong();
   }

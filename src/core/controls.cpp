@@ -182,7 +182,7 @@ void encodersLoop(yoEncoder *enc, bool first)
   if (encoderDelta != 0)
   {
     uint8_t encBtnState = digitalRead(first ? ENC_BTNB : ENC2_BTNB);
-#if defined(DUMMYDISPLAY) && !defined(USE_NEXTION)
+#if defined(DUMMYDISPLAY)
     first = first ? (first && encBtnState) : (!encBtnState);
     if (first)
     {
@@ -449,7 +449,7 @@ void onBtnLongPressStart(int id)
   case EVT_BTNCENTER:
   case EVT_ENCBTNB:
   {
-#if defined(DUMMYDISPLAY) && !defined(USE_NEXTION)
+#if defined(DUMMYDISPLAY)
     break;
 #endif
     // Dla źródeł zewnętrznych (BT, AUX1, AUX2) przytrzymanie nic nie robi
@@ -462,7 +462,7 @@ void onBtnLongPressStart(int id)
   }
   case EVT_ENC2BTNB:
   {
-#if defined(DUMMYDISPLAY) && !defined(USE_NEXTION)
+#if defined(DUMMYDISPLAY)
     break;
 #endif
     display.putRequest(NEWMODE, display.mode() == PLAYER ? VOL : PLAYER);
@@ -561,7 +561,7 @@ void controlsEvent(bool toRight, int8_t volDelta)
   }
   if (display.mode() != STATIONS)
   {
-#if !defined(DUMMYDISPLAY) || defined(USE_NEXTION)
+#if !defined(DUMMYDISPLAY)
     display.putRequest(NEWMODE, VOL);
 #endif
     if (volDelta != 0)

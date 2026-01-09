@@ -224,7 +224,6 @@ public:
   bool initNetwork();
   bool saveWifi();
   void setTimeConf();
-  bool saveWifiFromNextion(const char *post);
   void setSmartStart(uint8_t ss);
   void setBitrateFormat(BitrateFormat fmt)
   {

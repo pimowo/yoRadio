@@ -8,10 +8,6 @@
 #include "../displays/tools/l10n.h"
 #include "audiohelpers.h"
 
-#ifdef USE_NEXTION
-extern decltype(nextion) nextion;  // Nextion kijelző objektum (extern)
-#endif
-
 // Globális vagy osztály szintű változók
 String currentArtist = "";
 String currentTitle = "";

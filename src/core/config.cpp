@@ -13,9 +13,6 @@
 #ifdef USE_SD
 #include "sdmanager.h"
 #endif
-#ifdef USE_NEXTION
-#include "../displays/nextion.h"
-#endif
 #include <cstddef>
 
 #if DSP_MODEL == DSP_DUMMY
@@ -1087,22 +1084,6 @@ bool Config::parseSsid(const char *line, char *ssid, char *pass)
   return true;
 }
 
-bool Config::saveWifiFromNextion(const char *post)
-{
-  File file = SPIFFS.open(SSIDS_PATH, "w");
-  if (!file)
-  {
-    return false;
-  }
-  else
-  {
-    file.print(post);
-    file.close();
-    ESP.restart();
-    return true;
-  }
-}
-
 bool Config::saveWifi()
 {
   if (!SPIFFS.exists(TMP_PATH))
@@ -1164,19 +1145,6 @@ void Config::setBrightness(bool dosave)
     saveValue(&store.dspon, store.dspon, true, true);
   }
 #endif
-#ifdef USE_NEXTION
-  nextion.wake();
-  char cmd[15];
-  snprintf(cmd, 15, "dims=%d", store.brightness);
-  nextion.putcmd(cmd);
-  if (!store.dspon)
-    store.dspon = true;
-  if (dosave)
-  {
-    saveValue(&store.brightness, store.brightness, false, true);
-    saveValue(&store.dspon, store.dspon, true, true);
-  }
-#endif
 }
 
 void Config::setDspOn(bool dspon, bool saveval)
@@ -1186,12 +1154,6 @@ void Config::setDspOn(bool dspon, bool saveval)
     store.dspon = dspon;
     saveValue(&store.dspon, store.dspon, true, true);
   }
-#ifdef USE_NEXTION
-  if (!dspon)
-    nextion.sleep();
-  else
-    nextion.wake();
-#endif
   if (!dspon)
   {
 #if BRIGHTNESS_PIN != 255
@@ -1213,9 +1175,6 @@ void Config::doSleep()
   if (BRIGHTNESS_PIN != 255)
     analogWrite(BRIGHTNESS_PIN, 0);
   display.deepsleep();
-#ifdef USE_NEXTION
-  nextion.sleep();
-#endif
 #if !defined(ARDUINO_ESP32C3_DEV)
   if (WAKE_PIN != 255)
     esp_sleep_enable_ext0_wakeup((gpio_num_t)WAKE_PIN, LOW);
@@ -1229,9 +1188,6 @@ void Config::doSleepW()
   if (BRIGHTNESS_PIN != 255)
     analogWrite(BRIGHTNESS_PIN, 0);
   display.deepsleep();
-#ifdef USE_NEXTION
-  nextion.sleep();
-#endif
 #if !defined(ARDUINO_ESP32C3_DEV)
   if (WAKE_PIN != 255)
     esp_sleep_enable_ext0_wakeup((gpio_num_t)WAKE_PIN, LOW);
