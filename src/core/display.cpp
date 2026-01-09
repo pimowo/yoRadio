@@ -204,9 +204,6 @@ void Display::_buildPager()
   _plbackground = new FillWidget(playlBGConf, 1);
   //_metabackground = new FillWidget(metaBGConf, 1);
 #endif
-#ifndef HIDE_VU // Módosítás config.theme.vumid új
-  _vuwidget = new VuWidget(vuConf, bandsConf, config.theme.vumax, config.theme.vumid, config.theme.vumin, config.theme.background);
-#endif
 #ifndef HIDE_VOLBAR
   _volbar = new SliderWidget(volbarConf, config.theme.volbarin, config.theme.background, 100, config.theme.volbarout); // "vol_step"
 #endif
@@ -269,10 +266,6 @@ void Display::_buildPager()
   _bitrate = new TextWidget(bitrateConf, 30, false, config.theme.bitrate, config.theme.background);
   pages[PG_PLAYER]->addWidget(_bitrate);
 #endif
-  if (_vuwidget)
-  {
-    pages[PG_PLAYER]->addWidget(_vuwidget);
-  }
   pages[PG_PLAYER]->addWidget(_clock);
   pages[PG_SCREENSAVER]->addWidget(_clock);
   pages[PG_PLAYER]->addPage(_footer);
@@ -377,10 +370,6 @@ void Display::_start()
     _weather->setText(LANG::const_getWeather);
   }
 
-  if (_vuwidget)
-  {
-    _vuwidget->lock();
-  }
   if (_rssi)
   {
     _setRSSI(WiFi.RSSI());
@@ -562,70 +551,29 @@ void Display::putRequest(displayRequestType_e type, int payload)
 
 void Display::_layoutChange(bool played)
 {
-  if (config.store.vumeter && _vuwidget)
+  if (played)
   {
-    if (played)
+    if (clockMove.width < 0)
     {
-      if (_vuwidget)
-      {
-        _vuwidget->unlock();
-      }
-      //_clock->moveTo(clockMove);
-      if (clockMove.width < 0)
-      {
-        _clock->moveBack();
-      }
-      else
-      {
-        _clock->moveTo(clockMove);
-      }
-      if (_weather)
-      {
-        _weather->moveTo(weatherMoveVU);
-      }
+      _clock->moveBack();
     }
     else
     {
-      if (_vuwidget)
-      {
-        if (!_vuwidget->locked())
-        {
-          _vuwidget->lock();
-        }
-      }
-      _clock->moveBack();
-      if (_weather)
-      {
-        _weather->moveBack();
-      }
+      _clock->moveTo(clockMove);
     }
+    if (_weather)
+    {
+      _weather->moveTo(weatherMove);
+    }
+    //_clock->moveBack();
   }
   else
   {
-    if (played)
+    if (_weather)
     {
-      if (clockMove.width < 0)
-      {
-        _clock->moveBack();
-      }
-      else
-      {
-        _clock->moveTo(clockMove);
-      }
-      if (_weather)
-      {
-        _weather->moveTo(weatherMove);
-      }
-      //_clock->moveBack();
+      _weather->moveBack();
     }
-    else
-    {
-      if (_weather)
-      {
-        _weather->moveBack();
-      }
-      _clock->moveBack();
-    }
+    _clock->moveBack();
   }
 }
 
@@ -723,11 +671,7 @@ void Display::loop()
         break;
       case SHOWVUMETER:
       {
-        if (_vuwidget)
-        {
-          _vuwidget->lock(!config.store.vumeter);
-          _layoutChange(player.isRunning());
-        }
+        // VU Meter removed
         break;
       }
       case SHOWWEATHER:
