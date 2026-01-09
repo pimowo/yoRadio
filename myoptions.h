@@ -166,11 +166,6 @@
 // #define AM_PM_STYLE          // Format 12h
 // #define CLOCKFONT VT_DIGI_OLD // Stara czcionka 7-segmentowa
 
-/* Odczyt godziny przez Google TTS */
-#define CLOCK_TTS_ENABLED false
-#define CLOCK_TTS_LANGUAGE "PL"
-#define CLOCK_TTS_INTERVAL_MINUTES 30
-
 /* =========================================================
    15. POGODA
    ========================================================= */

@@ -486,16 +486,6 @@ The connection tables are located here https://github.com/e2002/yoradio#connecti
 #define L10N_LANGUAGE EN
 #endif
 
-/* CLOCK:TTS */
-#ifndef CLOCK_TTS_ENABLED // Módosítás új bejegyzés "clock_tts"
-#define CLOCK_TTS_ENABLED false
-#endif
-#ifndef CLOCK_TTS_INTERVAL_MINUTES
-#define CLOCK_TTS_INTERVAL_MINUTES 60
-#endif
-#ifndef CLOCK_TTS_LANGUAGE
-#define CLOCK_TTS_LANGUAGE "EN"
-#endif
 /* Stations list return time */
 #ifndef STATIONS_LIST_RETURN_TIME // "stations_list_return_time"
 #define STATIONS_LIST_RETURN_TIME 30

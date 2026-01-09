@@ -182,7 +182,6 @@ public:
   uint16_t sleepfor;
   uint32_t sdResumePos;
   uint16_t stopedSdStationId = -1; // "módosítás" új változó a player.stop ad neki értéket.
-  bool isClockTTS;                 // "módosítás" Ha aktív a clockTTS
   bool emptyFS;
   uint16_t screensaverTicks;
   uint16_t screensaverPlayingTicks;

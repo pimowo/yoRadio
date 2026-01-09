@@ -1,6 +1,5 @@
 // v0.9.720 Módosítva! "clock_tts"
 #include "Arduino.h"
-#include "clock_tts/clock_tts.h" // Módosítás: plussz sor. "clock_tts"
 #include "core/options.h"
 #include "core/config.h"
 #include "pluginsManager/pluginsManager.h"

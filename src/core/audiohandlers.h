@@ -560,7 +560,7 @@ void audio_id3data(const char *info)
 
 void audio_eof()
 {
-  if (!config.isClockTTS && config.getMode() == PM_SDCARD)
+  if (config.getMode() == PM_SDCARD)
   {
     config.sdResumePos = 0;
     player.next();
