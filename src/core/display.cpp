@@ -802,7 +802,6 @@ void Display::_station()
   {
     _meta->setText(config.getModeName(config.getMode()));
   }
-
 }
 
 char *split(char *str, const char *delim)
@@ -953,7 +952,7 @@ void Display::wakeup()
 #endif
 }
 //============================================================================================================================
-#else // !DUMMYDISPLAY
+#else  // !DUMMYDISPLAY
 //============================================================================================================================
 void Display::init()
 {
