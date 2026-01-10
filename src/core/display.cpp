@@ -583,16 +583,33 @@ void Display::loop()
       {
         if (_mode == PLAYER)
         { // csak a lejátszás képernyőn frissíti a bitrateWidgetet
-          char buf[20];
-          snprintf(buf, 20, bitrateFmt, config.station.bitrate);
-          if (_bitrate)
+          if (config.getMode() == PM_WEB || config.getMode() == PM_SDCARD)
           {
-            _bitrate->setText(config.station.bitrate == 0 ? "" : buf);
+            char buf[20];
+            snprintf(buf, 20, bitrateFmt, config.station.bitrate);
+            if (_bitrate)
+            {
+              _bitrate->setText(config.station.bitrate == 0 ? "" : buf);
+            }
+          }
+          else
+          {
+            if (_bitrate)
+            {
+              _bitrate->setText("");
+            }
           }
           if (_fullbitrate)
           {
-            _fullbitrate->setBitrate(config.station.bitrate);
-            _fullbitrate->setFormat(config.configFmt);
+            if (config.getMode() == PM_WEB || config.getMode() == PM_SDCARD)
+            {
+              _fullbitrate->setBitrate(config.station.bitrate);
+              _fullbitrate->setFormat(config.configFmt);
+            }
+            else
+            {
+              _fullbitrate->clearAll();
+            }
           }
         }
       }
@@ -601,6 +618,10 @@ void Display::loop()
       { // "nameday"
         if (_mode == PLAYER)
         { // csak a lejátszás képernyőn
+          if (_bitrate)
+          {
+            _bitrate->setText("");
+          }
           if (_fullbitrate)
           {
             _fullbitrate->clearAll();
@@ -754,7 +775,61 @@ char *split(char *str, const char *delim)
 void Display::_title()
 {
   // Ha üres a title, használja a playlistben tárolt nevet.
-  if (config.getMode() == PM_BLUETOOTH || config.getMode() == PM_TV || config.getMode() == PM_AUX)
+  if (config.getMode() == PM_BLUETOOTH)
+  {
+    // Bluetooth mode
+    String stationText = SRC_BT_NAME;
+    if (btMeta.connected)
+    {
+      if (strlen(btMeta.deviceName) > 0)
+      {
+        stationText = btMeta.deviceName;
+      }
+      else if (strlen(btMeta.deviceMAC) > 0)
+      {
+        stationText = btMeta.deviceMAC;
+      }
+    }
+    _meta->setText(stationText.c_str());
+
+    if (btMeta.connected)
+    {
+      String artistText = "";
+      if (strlen(btMeta.artist) > 0)
+      {
+        artistText = btMeta.artist;
+      }
+      else
+      {
+        artistText = stationText; // fallback
+      }
+      _title1->setText(artistText.c_str());
+
+      String titleText = "";
+      if (strlen(btMeta.title) > 0)
+      {
+        titleText = btMeta.title;
+      }
+      else
+      {
+        titleText = stationText; // fallback
+      }
+      if (_title2)
+      {
+        _title2->setText(titleText.c_str());
+      }
+    }
+    else
+    {
+      _title1->setText("");
+      if (_title2)
+      {
+        _title2->setText("");
+      }
+    }
+    return;
+  }
+  if (config.getMode() == PM_TV || config.getMode() == PM_AUX)
   {
     _title1->setText("");
     if (_title2)

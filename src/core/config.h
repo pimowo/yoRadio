@@ -370,4 +370,16 @@ extern Config config;
 extern SPIClass SPI2;
 #endif
 
+// Bluetooth metadata structure
+struct bt_metadata_t
+{
+  char deviceName[64] = "";
+  char deviceMAC[18] = "";
+  char artist[256] = "";
+  char title[256] = "";
+  bool connected = false;
+};
+
+extern bt_metadata_t btMeta;
+
 #endif

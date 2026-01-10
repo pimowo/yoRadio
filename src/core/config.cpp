@@ -21,6 +21,8 @@
 
 Config config;
 
+bt_metadata_t btMeta;
+
 void u8fix(char *src)
 { // Ha az utolsó tőbbájtos karakter (ékezetes) utolsó bájtja hiányzik akkor az elejét levágja.
   char last = src[strlen(src) - 1];

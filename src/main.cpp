@@ -27,7 +27,74 @@
 SPIClass SPI2(HSPI);
 #endif
 
+// UART for Bluetooth metadata
+HardwareSerial btSerial(2); // UART2, pins 16 RX, 17 TX
+
 extern __attribute__((weak)) void yoradio_on_setup();
+
+// Bluetooth UART parser
+void parseBTMessage(String msg)
+{
+  if (msg.startsWith("BT:"))
+  {
+    int colon1 = msg.indexOf(':', 3);
+    if (colon1 == -1)
+      return;
+    String cmd = msg.substring(3, colon1);
+    String value = msg.substring(colon1 + 1);
+    value.trim();
+
+    if (cmd == "CONNECTED")
+    {
+      btMeta.connected = true;
+      // Update display if in BT mode
+      if (config.getMode() == PM_BLUETOOTH)
+      {
+        display.putRequest(NEWTITLE);
+      }
+    }
+    else if (cmd == "DISCONNECTED")
+    {
+      btMeta.connected = false;
+      memset(btMeta.deviceName, 0, sizeof(btMeta.deviceName));
+      memset(btMeta.deviceMAC, 0, sizeof(btMeta.deviceMAC));
+      memset(btMeta.artist, 0, sizeof(btMeta.artist));
+      memset(btMeta.title, 0, sizeof(btMeta.title));
+      if (config.getMode() == PM_BLUETOOTH)
+      {
+        display.putRequest(NEWTITLE);
+      }
+    }
+    else if (cmd == "NAME")
+    {
+      strlcpy(btMeta.deviceName, value.c_str(), sizeof(btMeta.deviceName));
+      if (config.getMode() == PM_BLUETOOTH)
+      {
+        display.putRequest(NEWTITLE);
+      }
+    }
+    else if (cmd == "MAC")
+    {
+      strlcpy(btMeta.deviceMAC, value.c_str(), sizeof(btMeta.deviceMAC));
+    }
+    else if (cmd == "ARTIST")
+    {
+      strlcpy(btMeta.artist, value.c_str(), sizeof(btMeta.artist));
+      if (config.getMode() == PM_BLUETOOTH)
+      {
+        display.putRequest(NEWTITLE);
+      }
+    }
+    else if (cmd == "TITLE")
+    {
+      strlcpy(btMeta.title, value.c_str(), sizeof(btMeta.title));
+      if (config.getMode() == PM_BLUETOOTH)
+      {
+        display.putRequest(NEWTITLE);
+      }
+    }
+  }
+}
 
 #if USE_OTA
 void setupOTA()
@@ -70,6 +137,7 @@ void setupOTA()
 void setup()
 {
   Serial.begin(115200);
+  btSerial.begin(115200, SERIAL_8N1, 15, 16); // RX=15, TX=16
   if (REAL_LEDBUILTIN != 255)
     pinMode(REAL_LEDBUILTIN, OUTPUT);
   if (yoradio_on_setup)
@@ -133,6 +201,18 @@ void loop()
 {
   timekeeper.loop1();
   telnet.loop();
+
+  // Parse Bluetooth UART messages
+  while (btSerial.available())
+  {
+    String msg = btSerial.readStringUntil('\n');
+    msg.trim();
+    if (msg.length() > 0)
+    {
+      parseBTMessage(msg);
+    }
+  }
+
   if (network.status == CONNECTED || network.status == SDREADY)
   {
     player.loop();

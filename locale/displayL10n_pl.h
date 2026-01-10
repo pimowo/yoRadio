@@ -75,7 +75,7 @@ const char* const wind[]    PROGMEM = { wn_N, wn_NNE, wn_NE, wn_ENE, wn_E, wn_ES
 const char    const_PlReady[]    PROGMEM = "[ready]";
 const char  const_PlStopped[]    PROGMEM = "[stopped]";
 const char  const_PlConnect[]    PROGMEM = "[connecting]";
-const char  const_DlgVolume[]    PROGMEM = "VOLUME";
+const char  const_DlgVolume[]    PROGMEM = "Głośność";
 const char    const_DlgLost[]    PROGMEM = "* LOST *";
 const char  const_DlgUpdate[]    PROGMEM = "* UPDATING *";
 const char const_DlgNextion[]    PROGMEM = "* NEXTION *";
@@ -90,16 +90,16 @@ const char        apSettFmt[]    PROGMEM = "SETTINGS PAGE ON: HTTP://%s/";
 #ifdef WEATHER_FMT_SHORT
 const char weatherFmt[] PROGMEM = "%.1f\011C  \007  %d hPa  \007  %d%% RH";
 #else
-  #if EXT_WEATHER
-    #ifdef WIND_SPEED_IN_KMH
-      #define WIND_UNIT "km/h"
-    #else
-      #define WIND_UNIT "m/s"
-    #endif
+#if EXT_WEATHER
+#ifdef WIND_SPEED_IN_KMH
+#define WIND_UNIT "km/h"
+#else
+#define WIND_UNIT "m/s"
+#endif
 const char weatherFmt[] PROGMEM = "%s, %.1f\011C \007 odczuwalna: %.1f\011C \007 ciśnienie: %d hPa \007 wilgotność: %d%% \007 wiatr: %.1f " WIND_UNIT " [%s]";
-  #else
+#else
 const char weatherFmt[] PROGMEM = "%s \007 %.1f\011C \007 %d hPa \007 %d%% RH";
-  #endif
+#endif
 #endif
 
 const char weatherUnits[] PROGMEM = "metric"; /* standard, metric, imperial */

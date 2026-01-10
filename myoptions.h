@@ -18,7 +18,7 @@
    1. PLATFORMA / PŁYTKA
    ========================================================= */
 
-/* Wymuszamy ESP32-S3 (np. Super Mini) */
+/* Wymuszamy ESP32-S3 */
 #ifndef ARDUINO_ESP32S3_DEV
 #define ARDUINO_ESP32S3_DEV
 #endif
@@ -49,8 +49,8 @@
    ========================================================= */
 
 /* Aktualizacja OTA z Arduino IDE */
-// #define USE_OTA true
-// #define OTA_PASS "12345987" // Hasło OTA (Zmień!)
+#define USE_OTA true
+#define OTA_PASS "12345987" // Hasło OTA (Zmień!)
 
 /* Autoryzacja panelu WWW */
 // #define HTTP_USER "admin"
