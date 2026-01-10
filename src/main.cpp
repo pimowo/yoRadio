@@ -35,18 +35,28 @@ extern __attribute__((weak)) void yoradio_on_setup();
 // Bluetooth UART parser
 void parseBTMessage(String msg)
 {
+  Serial.print("BT MSG: ");
+  Serial.println(msg); // Debug: pokaż odebrane wiadomości
   if (msg.startsWith("BT:"))
   {
     int colon1 = msg.indexOf(':', 3);
+    String cmd;
+    String value;
     if (colon1 == -1)
-      return;
-    String cmd = msg.substring(3, colon1);
-    String value = msg.substring(colon1 + 1);
-    value.trim();
+    {
+      cmd = msg.substring(3);
+    }
+    else
+    {
+      cmd = msg.substring(3, colon1);
+      value = msg.substring(colon1 + 1);
+      value.trim();
+    }
 
     if (cmd == "CONNECTED")
     {
       btMeta.connected = true;
+      Serial.println("BT: Connected set to true"); // Debug
       // Update display if in BT mode
       if (config.getMode() == PM_BLUETOOTH)
       {
@@ -67,6 +77,11 @@ void parseBTMessage(String msg)
     }
     else if (cmd == "NAME")
     {
+      if (!btMeta.connected)
+      {
+        btMeta.connected = true;
+        Serial.println("BT: Connected set to true from NAME"); // Debug
+      }
       strlcpy(btMeta.deviceName, value.c_str(), sizeof(btMeta.deviceName));
       if (config.getMode() == PM_BLUETOOTH)
       {
@@ -79,6 +94,11 @@ void parseBTMessage(String msg)
     }
     else if (cmd == "ARTIST")
     {
+      if (!btMeta.connected)
+      {
+        btMeta.connected = true;
+        Serial.println("BT: Connected set to true from ARTIST"); // Debug
+      }
       strlcpy(btMeta.artist, value.c_str(), sizeof(btMeta.artist));
       if (config.getMode() == PM_BLUETOOTH)
       {
@@ -87,11 +107,20 @@ void parseBTMessage(String msg)
     }
     else if (cmd == "TITLE")
     {
+      if (!btMeta.connected)
+      {
+        btMeta.connected = true;
+        Serial.println("BT: Connected set to true from TITLE"); // Debug
+      }
       strlcpy(btMeta.title, value.c_str(), sizeof(btMeta.title));
       if (config.getMode() == PM_BLUETOOTH)
       {
         display.putRequest(NEWTITLE);
       }
+    }
+    else if (cmd == "PLAYING")
+    {
+      btMeta.playing = true;
     }
   }
 }

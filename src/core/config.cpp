@@ -8,6 +8,9 @@
 #include "controls.h"
 #include "timekeeper.h"
 #include "telnet.h"
+
+// UART for Bluetooth metadata
+extern HardwareSerial btSerial;
 #include "rtcsupport.h"
 #include "../displays/tools/l10n.h"
 #ifdef USE_SD
@@ -190,6 +193,10 @@ void Config::changeMode(int newmode)
     store.play_mode = (playMode_e)newmode;
   }
   saveValue(&store.play_mode, store.play_mode, true, true);
+  // if (store.play_mode == PM_BLUETOOTH)
+  // {
+  //   btSerial.println("RESET");
+  // }
 #ifdef USE_SD
   bool pir = player.isRunning();
   if (SDC_CS == 255)
@@ -237,7 +244,10 @@ void Config::changeMode(int newmode)
   {
     if (pir)
       player.sendCommand({PR_STOP, 0});
-    // Tutaj można dodać kod dla zewnętrznych źródeł
+    // Reset bitrate for non-streaming sources
+    station.bitrate = 0;
+    setBitrateFormat(BF_UNKNOWN);
+    display.putRequest(DBITRATE);
   }
   if (!_bootDone)
     return;

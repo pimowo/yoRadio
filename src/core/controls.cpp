@@ -9,6 +9,9 @@
 #include "netserver.h"
 #include "../pluginsManager/pluginsManager.h"
 
+// UART for Bluetooth metadata
+extern HardwareSerial btSerial;
+
 long encOldPosition = 0;
 long enc2OldPosition = 0;
 int lpId = -1;
@@ -617,7 +620,16 @@ void onBtnClick(int id)
     }
     if (display.mode() == PLAYER)
     {
-      player.toggle();
+      if (config.getMode() == PM_BLUETOOTH && btMeta.connected)
+      {
+        String cmd = btMeta.playing ? "PAUSE" : "PLAY";
+        btSerial.println(cmd);
+        btMeta.playing = !btMeta.playing;
+      }
+      else
+      {
+        player.toggle();
+      }
     }
     if (display.mode() == SCREENSAVER || display.mode() == SCREENBLANK)
     {

@@ -378,6 +378,7 @@ struct bt_metadata_t
   char artist[256] = "";
   char title[256] = "";
   bool connected = false;
+  bool playing = false;
 };
 
 extern bt_metadata_t btMeta;

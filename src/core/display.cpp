@@ -778,6 +778,9 @@ void Display::_title()
   if (config.getMode() == PM_BLUETOOTH)
   {
     // Bluetooth mode
+    Serial.println("BT Mode detected");                         // Debug
+    Serial.println("Connected: " + String(btMeta.connected));   // Debug
+    Serial.println("DeviceName: " + String(btMeta.deviceName)); // Debug
     String stationText = SRC_BT_NAME;
     if (btMeta.connected)
     {
