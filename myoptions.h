@@ -172,7 +172,7 @@
 #endif // myoptions_h
 
 /*
-ESP32_BT TX (GPIO 1) → yoRadio RX (GPIO 15)
-ESP32_BT RX (GPIO 3) → yoRadio TX (GPIO 16)
+ESP32_BT TX (GPIO 16) → yoRadio RX (GPIO 15)
+ESP32_BT RX (GPIO 17) → yoRadio TX (GPIO 16)
 GND wspólny między urządzeniami
 */
