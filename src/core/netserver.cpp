@@ -418,8 +418,14 @@ void NetServer::processQueue()
       sprintf(wsBuf, "{\"snuffle\": %d}", config.store.sdsnuffle);
       break;
     case BITRATE:
-      sprintf(
-          wsBuf, "{\"payload\":[{\"id\":\"bitrate\", \"value\": %d}, {\"id\":\"fmt\", \"value\": \"%s\"}]}", config.station.bitrate, getFormat(config.configFmt));
+      if (config.getMode() == PM_BLUETOOTH || config.getMode() == PM_TV || config.getMode() == PM_AUX)
+      {
+        sprintf(wsBuf, "{\"payload\":[{\"id\":\"bitrate\", \"value\": 0}, {\"id\":\"fmt\", \"value\": \"BD\"}]}");
+      }
+      else
+      {
+        sprintf(wsBuf, "{\"payload\":[{\"id\":\"bitrate\", \"value\": %d}, {\"id\":\"fmt\", \"value\": \"%s\"}]}", config.station.bitrate, getFormat(config.configFmt));
+      }
       break;
     case MODE:
       sprintf(wsBuf, "{\"payload\":[{\"id\":\"playerwrap\", \"value\": \"%s\"}]}", player.status() == PLAYING ? "playing" : "stopped");
@@ -536,7 +542,6 @@ void NetServer::onWsMessage(void *arg, uint8_t *data, size_t len, uint8_t client
         websocket.text(clientId, "{\"pong\": 1}");
         return;
       }
-      int8_t valb = atoi(_wsval);
       if (strcmp(_wscmd, "trebble") == 0)
       {
         int8_t valb = atoi(_wsval);

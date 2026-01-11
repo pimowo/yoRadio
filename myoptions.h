@@ -122,7 +122,7 @@
    ========================================================= */
 
 /* Włączanie źródeł audio do przełączania */
-#define SRC_BT true    // Bluetooth
+#define SRC_BT true   // Bluetooth
 #define SRC_AUX1 true // AUX1 S/PDIF
 #define SRC_AUX2 true // AUX2 RCA
 
@@ -150,8 +150,8 @@
    13. KARTA SD
    ========================================================= */
 
-// #define SDC_CS 18
-// #define SDSPISPEED 4000000   // 4 MHz – stabilniej przy SPI shared
+#define SDC_CS 18
+#define SDSPISPEED 4000000 // 4 MHz – stabilniej przy SPI shared
 
 /* =========================================================
    14. ZEGAR – WYGLĄD I FUNKCJE

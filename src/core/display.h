@@ -46,6 +46,8 @@ public:
   void unlock() { _locked = false; }
   uint16_t width();
   uint16_t height();
+  void switchToPlayer();
+  void _swichMode(displayMode_e newmode);
 
 private:
   ScrollWidget *_meta, *_title1, *_plcurrent, *_title2;
@@ -63,7 +65,6 @@ private:
   uint8_t _bootStep;
   void _time(bool redraw = false);
   void _apScreen();
-  void _swichMode(displayMode_e newmode);
   void _drawPlaylist();
   void _volume();
   void _title();
@@ -108,6 +109,7 @@ public:
   void unlock() {}
   uint16_t width() { return 0; }
   uint16_t height() { return 0; }
+  void switchToPlayer() { _swichMode(PLAYER); }
 
 private:
   void _createDspTask();

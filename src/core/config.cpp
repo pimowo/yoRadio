@@ -254,9 +254,12 @@ void Config::changeMode(int newmode)
   }
   if (!_bootDone)
     return;
-  initPlaylistMode();
-  if (pir && (getMode() == PM_WEB || getMode() == PM_SDCARD))
+  if (getMode() == PM_WEB || getMode() == PM_SDCARD)
     player.sendCommand({PR_PLAY, getMode() == PM_WEB ? store.lastStation : store.lastSdStation});
+  if (getMode() == PM_WEB)
+  {
+    loadStation(store.lastStation > 0 ? store.lastStation : 1);
+  }
 #endif
   netserver.resetQueue();
   netserver.requestOnChange(GETINDEX, 0);

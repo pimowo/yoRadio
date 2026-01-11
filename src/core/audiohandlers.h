@@ -176,7 +176,7 @@ void my_audio_info(Audio::msg_t m)
     // Serial.println();
     // hexDump("Eredeti: ", msg);
     char metaBuf[BUFLEN];
-    if (!metaOff && cleanMeta(msg, metaBuf, sizeof(metaBuf)))
+    if (!metaOff && cleanMeta(msg, metaBuf, sizeof(metaBuf)) && (config.getMode() == PM_WEB || config.getMode() == PM_SDCARD))
     {
       audio_setTitleSafe(metaBuf);
     }

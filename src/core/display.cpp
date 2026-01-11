@@ -581,7 +581,6 @@ void Display::loop()
         break;
       case DBITRATE:
       {
-        Serial.println("DBITRATE: mode=" + String(_mode) + ", getMode=" + String(config.getMode()) + ", bitrate=" + String(config.station.bitrate));
         if (_mode == PLAYER)
         { // csak a lejátszás képernyőn frissíti a bitrateWidgetet
           if (config.getMode() == PM_WEB || config.getMode() == PM_SDCARD)
@@ -610,8 +609,7 @@ void Display::loop()
             }
             else
             {
-              _fullbitrate->setBitrate(0);
-              _fullbitrate->setFormat(BF_UNKNOWN);
+              _fullbitrate->clearAll();
             }
           }
         }
@@ -760,7 +758,10 @@ void Display::_station()
   }
   else
   {
-    _meta->setText(config.getModeName(config.getMode()));
+    const char *modeName = config.getModeName(config.getMode());
+    _meta->setText(modeName);
+    strlcpy(config.station.name, modeName, sizeof(config.station.name));
+    netserver.requestOnChange(STATIONNAME, 0);
   }
 }
 
@@ -781,9 +782,6 @@ void Display::_title()
   if (config.getMode() == PM_BLUETOOTH)
   {
     // Bluetooth mode
-    Serial.println("BT Mode detected");                         // Debug
-    Serial.println("Connected: " + String(btMeta.connected));   // Debug
-    Serial.println("DeviceName: " + String(btMeta.deviceName)); // Debug
     String stationText = SRC_BT_NAME;
     if (btMeta.connected)
     {
@@ -797,6 +795,8 @@ void Display::_title()
       }
     }
     _meta->setText(stationText.c_str());
+    strlcpy(config.station.name, stationText.c_str(), sizeof(config.station.name));
+    netserver.requestOnChange(STATIONNAME, 0);
 
     if (btMeta.connected)
     {
@@ -824,6 +824,8 @@ void Display::_title()
       {
         _title2->setText(titleText.c_str());
       }
+      String meta = artistText + " - " + titleText;
+      strlcpy(config.station.title, meta.c_str(), sizeof(config.station.title));
     }
     else
     {
@@ -832,7 +834,9 @@ void Display::_title()
       {
         _title2->setText("");
       }
+      strlcpy(config.station.title, "", sizeof(config.station.title));
     }
+    netserver.requestOnChange(TITLE, 0);
     return;
   }
   if (config.getMode() == PM_TV || config.getMode() == PM_AUX)
@@ -840,6 +844,8 @@ void Display::_title()
     _title1->setText("");
     if (_title2)
       _title2->setText("");
+    strlcpy(config.station.title, "", sizeof(config.station.title));
+    netserver.requestOnChange(TITLE, 0);
     return;
   }
   if (strlen(config.station.title) == 0)
@@ -968,6 +974,11 @@ void Display::wakeup()
   dsp.wake();
 #endif
 }
+
+void Display::switchToPlayer()
+{
+  // For DUMMYDISPLAY, do nothing or minimal
+}
 //============================================================================================================================
 #else  // !DUMMYDISPLAY
 //============================================================================================================================
@@ -990,6 +1001,11 @@ void Display::putRequest(displayRequestType_e type, int payload)
   {
     mode((displayMode_e)payload);
   }
+}
+
+void Display::switchToPlayer()
+{
+  _swichMode(PLAYER);
 }
 //============================================================================================================================
 #endif // DUMMYDISPLAY

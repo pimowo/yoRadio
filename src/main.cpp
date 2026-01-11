@@ -118,11 +118,29 @@ void parseBTMessage(String msg)
       if (config.getMode() == PM_BLUETOOTH)
       {
         display.putRequest(NEWTITLE);
+        if (strlen(btMeta.artist) > 0 && strlen(btMeta.title) > 0)
+        {
+          char meta[256];
+          snprintf(meta, sizeof(meta), "%s - %s", btMeta.artist, btMeta.title);
+          strlcpy(config.station.title, meta, sizeof(config.station.title));
+          netserver.requestOnChange(TITLE, 0);
+          telnet.printf("##CLI.META#: %s\r\n", meta);
+        }
       }
     }
     else if (cmd == "PLAYING")
     {
       btMeta.playing = true;
+    }
+    else if (cmd == "STOPPED")
+    {
+      btMeta.playing = false;
+      if (config.getMode() == PM_BLUETOOTH)
+      {
+        memset(config.station.title, 0, sizeof(config.station.title));
+        netserver.requestOnChange(TITLE, 0);
+        telnet.printf("##CLI.META#: \r\n");
+      }
     }
   }
 }

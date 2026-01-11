@@ -623,7 +623,6 @@ void onBtnClick(int id)
       if (config.getMode() == PM_BLUETOOTH && btMeta.connected)
       {
         String cmd = btMeta.playing ? "PAUSE" : "PLAY";
-        Serial.println("Sending BT cmd: " + cmd);
         btSerial.println(cmd);
         btMeta.playing = !btMeta.playing;
       }
