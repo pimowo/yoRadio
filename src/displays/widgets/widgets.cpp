@@ -948,7 +948,7 @@ void ClockWidget::_formatDate()
       LANG::dowf[network.timeinfo.tm_wday]);
 #elif L10N_LANGUAGE == PL
   sprintf(
-      _tmp, "%s - %02d %s %04d", LANG::dowf[network.timeinfo.tm_wday], network.timeinfo.tm_mday, LANG::mnths[network.timeinfo.tm_mon],
+      _tmp, "%s %02d %s %04d", LANG::dowf[network.timeinfo.tm_wday], network.timeinfo.tm_mday, LANG::mnths[network.timeinfo.tm_mon],
       network.timeinfo.tm_year + 1900);
 #elif L10N_LANGUAGE == GR
   sprintf(_tmp, "%2d %s %d", network.timeinfo.tm_mday, LANG::mnths[network.timeinfo.tm_mon], network.timeinfo.tm_year + 1900);

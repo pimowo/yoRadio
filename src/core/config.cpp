@@ -240,6 +240,10 @@ void Config::changeMode(int newmode)
       ESP.restart();
     sdman.stop();
   }
+  Serial.print("store.play_mode = ");
+  Serial.println(store.play_mode);
+  Serial.print("After change, getMode() = ");
+  Serial.println(getMode());
   if (getMode() == PM_BLUETOOTH || getMode() == PM_TV || getMode() == PM_AUX)
   {
     if (pir)
@@ -247,7 +251,6 @@ void Config::changeMode(int newmode)
     // Reset bitrate for non-streaming sources
     station.bitrate = 0;
     setBitrateFormat(BF_UNKNOWN);
-    display.putRequest(DBITRATE);
   }
   if (!_bootDone)
     return;
@@ -261,6 +264,7 @@ void Config::changeMode(int newmode)
   display.putRequest(NEWMODE, PLAYER);
   display.putRequest(NEWSTATION);
   display.putRequest(NEWTITLE);
+  display.putRequest(DBITRATE);
 }
 
 void Config::initSDPlaylist()

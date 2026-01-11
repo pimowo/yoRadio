@@ -581,6 +581,7 @@ void Display::loop()
         break;
       case DBITRATE:
       {
+        Serial.println("DBITRATE: mode=" + String(_mode) + ", getMode=" + String(config.getMode()) + ", bitrate=" + String(config.station.bitrate));
         if (_mode == PLAYER)
         { // csak a lejátszás képernyőn frissíti a bitrateWidgetet
           if (config.getMode() == PM_WEB || config.getMode() == PM_SDCARD)
@@ -603,12 +604,14 @@ void Display::loop()
           {
             if (config.getMode() == PM_WEB || config.getMode() == PM_SDCARD)
             {
+              _fullbitrate->setActive(true, false);
               _fullbitrate->setBitrate(config.station.bitrate);
               _fullbitrate->setFormat(config.configFmt);
             }
             else
             {
-              _fullbitrate->clearAll();
+              _fullbitrate->setBitrate(0);
+              _fullbitrate->setFormat(BF_UNKNOWN);
             }
           }
         }

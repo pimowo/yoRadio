@@ -122,7 +122,7 @@
    ========================================================= */
 
 /* Włączanie źródeł audio do przełączania */
-#define SRC_BT true   // Bluetooth
+#define SRC_BT true    // Bluetooth
 #define SRC_AUX1 true // AUX1 S/PDIF
 #define SRC_AUX2 true // AUX2 RCA
 

@@ -56,6 +56,8 @@ void parseBTMessage(String msg)
     if (cmd == "CONNECTED")
     {
       btMeta.connected = true;
+      memset(btMeta.artist, 0, sizeof(btMeta.artist));
+      memset(btMeta.title, 0, sizeof(btMeta.title));
       Serial.println("BT: Connected set to true"); // Debug
       // Update display if in BT mode
       if (config.getMode() == PM_BLUETOOTH)
