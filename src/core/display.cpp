@@ -594,6 +594,7 @@ void Display::loop()
           }
           else
           {
+            config.station.bitrate = 0;
             if (_bitrate)
             {
               _bitrate->setText("");
@@ -609,6 +610,7 @@ void Display::loop()
             }
             else
             {
+              config.station.bitrate = 0;
               _fullbitrate->clearAll();
             }
           }
@@ -760,7 +762,6 @@ void Display::_station()
   {
     const char *modeName = config.getModeName(config.getMode());
     _meta->setText(modeName);
-    strlcpy(config.station.name, modeName, sizeof(config.station.name));
     netserver.requestOnChange(STATIONNAME, 0);
   }
 }
@@ -795,7 +796,6 @@ void Display::_title()
       }
     }
     _meta->setText(stationText.c_str());
-    strlcpy(config.station.name, stationText.c_str(), sizeof(config.station.name));
     netserver.requestOnChange(STATIONNAME, 0);
 
     if (btMeta.connected)

@@ -8,6 +8,8 @@
 #include "controls.h"
 #include "timekeeper.h"
 #include "telnet.h"
+#include <HardwareSerial.h>
+extern HardwareSerial btSerial;
 
 // UART for Bluetooth metadata
 extern HardwareSerial btSerial;
@@ -98,6 +100,7 @@ void Config::init()
 #endif
 #endif
   eepromRead(EEPROM_START, store);
+  memset(&station, 0, sizeof(station));
   bootInfo(); // https://github.com/e2002/yoradio/pull/149
   if (store.config_set != 4262)
   {
@@ -247,7 +250,15 @@ void Config::changeMode(int newmode)
   if (getMode() == PM_BLUETOOTH || getMode() == PM_TV || getMode() == PM_AUX)
   {
     if (pir)
+    {
       player.sendCommand({PR_STOP, 0});
+      // Wait for player to stop
+      uint32_t start = millis();
+      while (player.isRunning() && (millis() - start) < 1000)
+      {
+        delay(10);
+      }
+    }
     // Reset bitrate for non-streaming sources
     station.bitrate = 0;
     setBitrateFormat(BF_UNKNOWN);
