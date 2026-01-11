@@ -52,6 +52,10 @@ public:
   bool resumeAfterUrl = false;
   volatile bool connproc = true;
   uint32_t sd_min, sd_max;
+  // Bitrate watchdog
+  bool waitingBitrate = false;
+  uint8_t bitrateRetries = 0;
+  uint32_t bitrateWatchUntil = 0;
 #ifdef MQTT_ROOT_TOPIC
   char burl[MQTT_BURL_SIZE]; /* buffer for browseUrl  */
 #endif

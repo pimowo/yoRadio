@@ -380,6 +380,8 @@ void audio_bitrate(const char *info)
   {
     config.station.bitrate = br;
     display.putRequest(DBITRATE);
+    // stop bitrate watchdog
+    player.waitingBitrate = false;
   }
 #ifdef USE_NEXTION
   nextion.bitrate(config.station.bitrate);

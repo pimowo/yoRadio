@@ -288,6 +288,8 @@ void Config::changeMode(int newmode)
     {
       // Synchronous stop
       player._stop(false);
+      // Clear any bitrate watchdog
+      player.waitingBitrate = false;
     }
     // Reset bitrate for non-streaming sources
     station.bitrate = 0;
@@ -406,7 +408,11 @@ void Config::configPostPlaying(uint16_t stationId)
   netserver.requestOnChange(MODE, 0);
   display.putRequest(PSTART);
   display.putRequest(DBITRATE); // Force bitrate update after starting play
-  delay(2000);                  // Wait for bitrate
+  // Start bitrate watchdog in player
+  player.waitingBitrate = true;
+  player.bitrateRetries = 0;
+  player.bitrateWatchUntil = millis() + 3000;
+  delay(2000); // Wait for bitrate
   display.putRequest(DBITRATE);
 }
 

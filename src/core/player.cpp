@@ -132,6 +132,7 @@ void Player::_stop(bool alreadyStopped)
   if (!alreadyStopped)
   {
     stopSong();
+    delay(200); // Ensure Audio stops completely
   }
   netserver.requestOnChange(BITRATE, 0);
   display.putRequest(DBITRATE);
@@ -254,6 +255,31 @@ void Player::loop()
       { // Csak akkor next(), ha a fájl ténylegesen lejárt
         next();
       }
+    }
+  }
+
+  // Bitrate watchdog: if we requested bitrate and it didn't arrive, retry stop/play
+  if (waitingBitrate && millis() > bitrateWatchUntil)
+  {
+    if (bitrateRetries < 3)
+    {
+      bitrateRetries++;
+      bitrateWatchUntil = millis() + 3000;
+      Serial.print("Bitrate watchdog: retry #");
+      Serial.println(bitrateRetries);
+      // Force restart of stream to retrigger metadata
+      if (_status == PLAYING)
+      {
+        _stop(true);
+      }
+      delay(150);
+      _play(config.lastStation());
+    }
+    else
+    {
+      // give up
+      waitingBitrate = false;
+      Serial.println("Bitrate watchdog: giving up");
     }
   }
 
