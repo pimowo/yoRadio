@@ -374,7 +374,9 @@ void audio_bitrate(const char *info)
   {
     br = br / 1000;
   }
-  if (player.isRunning() && (config.getMode() == PM_WEB || config.getMode() == PM_SDCARD))
+  Serial.print("Bitrate received: ");
+  Serial.println(br);
+  if (config.getMode() == PM_WEB || config.getMode() == PM_SDCARD)
   {
     config.station.bitrate = br;
     display.putRequest(DBITRATE);
