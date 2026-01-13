@@ -434,6 +434,9 @@ void Config::configPostPlaying(uint16_t stationId)
   netserver.requestOnChange(MODE, 0);
   display.putRequest(PSTART);
   display.putRequest(DBITRATE); // Force bitrate update after starting play
+  // Ensure station/title are refreshed now that playback started
+  display.putRequest(NEWSTATION);
+  display.putRequest(NEWTITLE);
   // Start bitrate watchdog in player
   player.waitingBitrate = true;
   player.bitrateRetries = 0;
