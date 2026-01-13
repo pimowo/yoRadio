@@ -384,6 +384,12 @@ struct bt_metadata_t
   char title[128] = "";
   bool connected = false;
   bool playing = false;
+  // ACK handling for play/pause: when we send a PLAY/PAUSE command
+  // we set awaitingAck=true and set ackDeadline. Parser will clear
+  // awaitingAck when PLAYING/STOPPED is received.
+  bool awaitingAck = false;
+  uint32_t ackDeadline = 0;
+  bool expectedPlaying = false;
 };
 
 extern bt_metadata_t btMeta;

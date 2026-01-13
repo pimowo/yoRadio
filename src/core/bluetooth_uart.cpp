@@ -153,6 +153,12 @@ void bluetooth_handle_line(const char *line)
         if (btMetaMutex)
             xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
         btMeta.playing = true;
+        // if we were awaiting ack for play, clear it when device confirms
+        if (btMeta.awaitingAck && btMeta.expectedPlaying == true)
+        {
+            btMeta.awaitingAck = false;
+            btMeta.ackDeadline = 0;
+        }
         if (btMetaMutex)
             xSemaphoreGive(btMetaMutex);
         return;
@@ -162,6 +168,12 @@ void bluetooth_handle_line(const char *line)
         if (btMetaMutex)
             xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
         btMeta.playing = false;
+        // clear ack if we were expecting stopped
+        if (btMeta.awaitingAck && btMeta.expectedPlaying == false)
+        {
+            btMeta.awaitingAck = false;
+            btMeta.ackDeadline = 0;
+        }
         if (btMetaMutex)
             xSemaphoreGive(btMetaMutex);
         if (config.getMode() == PM_BLUETOOTH)

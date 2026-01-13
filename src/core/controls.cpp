@@ -629,7 +629,14 @@ void onBtnClick(int id)
       {
         String cmd = btMeta.playing ? "PAUSE" : "PLAY";
         btSerial.println(cmd);
-        btMeta.playing = !btMeta.playing;
+        // Don't flip btMeta.playing locally - wait for device confirmation (PLAYING/STOPPED)
+        if (btMetaMutex)
+          xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+        btMeta.awaitingAck = true;
+        btMeta.expectedPlaying = (cmd == "PLAY");
+        btMeta.ackDeadline = millis() + BT_ACK_TIMEOUT_MS;
+        if (btMetaMutex)
+          xSemaphoreGive(btMetaMutex);
       }
       else
       {

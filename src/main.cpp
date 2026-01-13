@@ -316,6 +316,18 @@ void loop()
     }
   }
 
+  // Check for Bluetooth PLAY/PAUSE ACK timeout
+  if (btMeta.awaitingAck && btMeta.ackDeadline > 0 && millis() > btMeta.ackDeadline)
+  {
+    if (btMetaMutex)
+      xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+    btMeta.awaitingAck = false;
+    btMeta.ackDeadline = 0;
+    if (btMetaMutex)
+      xSemaphoreGive(btMetaMutex);
+    Serial.println("BT: ACK timeout for PLAY/PAUSE");
+  }
+
   if (network.status == CONNECTED || network.status == SDREADY)
   {
     player.loop();
