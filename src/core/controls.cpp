@@ -765,32 +765,14 @@ void onBtnDoubleClick(int id)
     onBtnClick(EVT_BTNSOURCE);
     break;
   }
-  case EVT_BTNRIGHT:
+  case EVT_BTNCENTER:
+  case EVT_ENCBTNB:
+  case EVT_ENC2BTNB:
   {
-    if (display.mode() != PLAYER)
-      return;
-    if (network.status != CONNECTED && network.status != SDREADY)
-      return;
-    player.next();
+    // Dwuklik enkodera/środkowego przycisku wyłącznie przełącza źródło dźwięku
+    onBtnClick(EVT_BTNSOURCE);
     break;
   }
-  default:
-    break;
-  }
-}
-void setIRTolerance(uint8_t tl)
-{
-  config.saveValue(&config.store.irtlp, tl);
-#if IR_PIN != 255
-  irrecv.setTolerance(config.store.irtlp);
-#endif
-}
-void setEncAcceleration(uint16_t acc)
-{
-  config.saveValue(&config.store.encacc, acc);
-#if ENC_BTNL != 255
-  encoder.setAcceleration(config.store.encacc);
-#endif
 #if ENC2_BTNL != 255
   encoder2.setAcceleration(config.store.encacc);
 #endif
