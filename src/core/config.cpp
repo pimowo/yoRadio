@@ -3,6 +3,7 @@
 #include "config.h"
 #include "display.h"
 #include "player.h"
+#include "bluetooth_uart.h"
 #include "network.h"
 #include "netserver.h"
 #include "controls.h"
