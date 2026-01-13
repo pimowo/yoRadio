@@ -75,6 +75,21 @@ void bluetooth_handle_line(const char *line)
             display.putRequest(NEWTITLE);
         return;
     }
+    if (strcmp(cmd, "STATUS") == 0)
+    {
+        // response to probe: mark seen and clear probe state
+        if (btMetaMutex)
+            xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+        btMeta.connected = true;
+        btMeta.lastSeen = millis();
+        btMeta.probeSent = false;
+        btMeta.probeDeadline = 0;
+        if (btMetaMutex)
+            xSemaphoreGive(btMetaMutex);
+        if (config.getMode() == PM_BLUETOOTH)
+            display.putRequest(NEWTITLE);
+        return;
+    }
     if (strcmp(cmd, "DISCONNECTED") == 0)
     {
         if (btMetaMutex)

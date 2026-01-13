@@ -641,7 +641,7 @@ void onBtnClick(int id)
             xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
           btMeta.awaitingAck = true;
           btMeta.expectedPlaying = (cmd == "PLAY");
-          btMeta.ackDeadline = millis() + BT_ACK_TIMEOUT_MS;
+          btMeta.ackDeadline = millis() + bt_ack_timeout_ms;
           if (btMetaMutex)
             xSemaphoreGive(btMetaMutex);
         }

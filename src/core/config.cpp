@@ -30,6 +30,10 @@ Config config;
 bt_metadata_t btMeta;
 SemaphoreHandle_t btMetaMutex = NULL;
 
+// Runtime-configurable BT timeouts (defaults mirror existing macros)
+uint32_t bt_ack_timeout_ms = BT_ACK_TIMEOUT_MS;
+uint32_t bt_heartbeat_timeout_ms = BT_HEARTBEAT_TIMEOUT_MS;
+
 // Snapshot helper: copy btMeta into provided buffer under mutex
 void bt_meta_snapshot(bt_metadata_t *out)
 {

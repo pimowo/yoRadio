@@ -5,4 +5,8 @@
 // Increased to 60s to avoid spurious disconnects on noisy links
 #define BT_HEARTBEAT_TIMEOUT_MS 60000
 
+// runtime-configurable timeouts (defaults defined by macros above)
+extern uint32_t bt_ack_timeout_ms;
+extern uint32_t bt_heartbeat_timeout_ms;
+
 void bluetooth_handle_line(const char *line);

@@ -345,7 +345,7 @@ void loop()
     bool probeSent = local.probeSent;
     uint32_t probeDeadline = local.probeDeadline;
 
-    if (connected && lastSeen > 0 && (millis() - lastSeen) > BT_HEARTBEAT_TIMEOUT_MS)
+    if (connected && lastSeen > 0 && (millis() - lastSeen) > bt_heartbeat_timeout_ms)
     {
       bool shouldDisconnect = false;
       if (awaitingAck)
@@ -363,7 +363,7 @@ void loop()
           if (btMetaMutex)
             xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
           btMeta.probeSent = true;
-          btMeta.probeDeadline = millis() + BT_ACK_TIMEOUT_MS;
+          btMeta.probeDeadline = millis() + bt_ack_timeout_ms;
           if (btMetaMutex)
             xSemaphoreGive(btMetaMutex);
         }
