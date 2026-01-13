@@ -838,6 +838,16 @@ void Display::_title()
       if (btMetaMutex)
         xSemaphoreGive(btMetaMutex);
 
+      // Treat common placeholder values from some phones as empty
+      if (strcasecmp(localTitle, "Not Provided") == 0)
+      {
+        localTitle[0] = '\0';
+      }
+      if (strcasecmp(localArtist, "Not Provided") == 0)
+      {
+        localArtist[0] = '\0';
+      }
+
       // If no metadata yet, show device name + 'Połączony' on second line
       if (strlen(localArtist) == 0 && strlen(localTitle) == 0)
       {
