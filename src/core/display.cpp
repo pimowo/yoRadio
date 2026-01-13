@@ -812,31 +812,32 @@ void Display::_title()
   {
     // Bluetooth mode
     String stationText = SRC_BT_NAME;
-    if (btMeta.connected)
+
+    // Snapshot entire btMeta for consistent view
+    bt_metadata_t local;
+    bt_meta_snapshot(&local);
+
+    if (local.connected)
     {
-      if (strlen(btMeta.deviceName) > 0)
+      if (strlen(local.deviceName) > 0)
       {
-        stationText = btMeta.deviceName;
+        stationText = local.deviceName;
       }
-      else if (strlen(btMeta.deviceMAC) > 0)
+      else if (strlen(local.deviceMAC) > 0)
       {
-        stationText = btMeta.deviceMAC;
+        stationText = local.deviceMAC;
       }
     }
     _meta->setText(stationText.c_str());
     netserver.requestOnChange(STATIONNAME, 0);
 
-    if (btMeta.connected)
+    if (local.connected)
     {
-      // copy under mutex to avoid torn reads
-      char localArtist[sizeof(btMeta.artist)];
-      char localTitle[sizeof(btMeta.title)];
-      if (btMetaMutex)
-        xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
-      strlcpy(localArtist, btMeta.artist, sizeof(localArtist));
-      strlcpy(localTitle, btMeta.title, sizeof(localTitle));
-      if (btMetaMutex)
-        xSemaphoreGive(btMetaMutex);
+      // Use snapshot's artist/title
+      char localArtist[sizeof(local.artist)];
+      char localTitle[sizeof(local.title)];
+      strlcpy(localArtist, local.artist, sizeof(localArtist));
+      strlcpy(localTitle, local.title, sizeof(localTitle));
 
       // Treat common placeholder values from some phones as empty
       if (strcasecmp(localTitle, "Not Provided") == 0)

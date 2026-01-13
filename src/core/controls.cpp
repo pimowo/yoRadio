@@ -626,18 +626,25 @@ void onBtnClick(int id)
     }
     if (display.mode() == PLAYER)
     {
-      if (config.getMode() == PM_BLUETOOTH && btMeta.connected)
+      if (config.getMode() == PM_BLUETOOTH)
       {
-        String cmd = btMeta.playing ? "PAUSE" : "PLAY";
-        btSerial.println(cmd);
-        // Don't flip btMeta.playing locally - wait for device confirmation (PLAYING/STOPPED)
-        if (btMetaMutex)
-          xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
-        btMeta.awaitingAck = true;
-        btMeta.expectedPlaying = (cmd == "PLAY");
-        btMeta.ackDeadline = millis() + BT_ACK_TIMEOUT_MS;
-        if (btMetaMutex)
-          xSemaphoreGive(btMetaMutex);
+        // Snapshot entire metadata for decision
+        bt_metadata_t local;
+        bt_meta_snapshot(&local);
+
+        if (local.connected)
+        {
+          String cmd = local.playing ? "PAUSE" : "PLAY";
+          btSerial.println(cmd);
+          // Don't flip btMeta.playing locally - wait for device confirmation (PLAYING/STOPPED)
+          if (btMetaMutex)
+            xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+          btMeta.awaitingAck = true;
+          btMeta.expectedPlaying = (cmd == "PLAY");
+          btMeta.ackDeadline = millis() + BT_ACK_TIMEOUT_MS;
+          if (btMetaMutex)
+            xSemaphoreGive(btMetaMutex);
+        }
       }
       else
       {

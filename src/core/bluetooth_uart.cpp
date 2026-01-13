@@ -142,17 +142,18 @@ void bluetooth_handle_line(const char *line)
             Serial.println("BT: Connected set to true from TITLE");
         }
         strlcpy(btMeta.title, value, sizeof(btMeta.title));
-        char localArtist[sizeof(btMeta.artist)];
-        strlcpy(localArtist, btMeta.artist, sizeof(localArtist));
+        // take a snapshot to build meta safely
+        bt_metadata_t local;
+        bt_meta_snapshot(&local);
         if (btMetaMutex)
             xSemaphoreGive(btMetaMutex);
         if (config.getMode() == PM_BLUETOOTH)
         {
             display.putRequest(NEWTITLE);
-            if (strlen(localArtist) > 0 && strlen(btMeta.title) > 0)
+            if (strlen(local.artist) > 0 && strlen(local.title) > 0)
             {
                 char meta[256];
-                snprintf(meta, sizeof(meta), "%s - %s", localArtist, btMeta.title);
+                snprintf(meta, sizeof(meta), "%s - %s", local.artist, local.title);
                 strlcpy(config.station.title, meta, sizeof(config.station.title));
                 netserver.requestOnChange(TITLE, 0);
                 telnet.printf("##CLI.META#: %s\r\n", meta);

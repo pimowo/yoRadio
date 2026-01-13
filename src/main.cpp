@@ -28,7 +28,7 @@
 SPIClass SPI2(HSPI);
 #endif
 
-// UART for Bluetooth metadata
+// UART for Blutadata
 HardwareSerial btSerial(2); // UART2, pins 16 RX, 17 TX
 
 extern __attribute__((weak)) void yoradio_on_setup();
@@ -138,18 +138,20 @@ void parseBTMessage(String msg)
         Serial.println("BT: Connected set to true from TITLE"); // Debug
       }
       strlcpy(btMeta.title, value.c_str(), sizeof(btMeta.title));
-      // copy local copy of artist to build meta safely
+      // copy local copy of artist and title to build meta safely
       char localArtist[sizeof(btMeta.artist)];
+      char localTitle[sizeof(btMeta.title)];
       strlcpy(localArtist, btMeta.artist, sizeof(localArtist));
+      strlcpy(localTitle, btMeta.title, sizeof(localTitle));
       if (btMetaMutex)
         xSemaphoreGive(btMetaMutex);
       if (config.getMode() == PM_BLUETOOTH)
       {
         display.putRequest(NEWTITLE);
-        if (strlen(localArtist) > 0 && strlen(btMeta.title) > 0)
+        if (strlen(localArtist) > 0 && strlen(localTitle) > 0)
         {
           char meta[256];
-          snprintf(meta, sizeof(meta), "%s - %s", localArtist, btMeta.title);
+          snprintf(meta, sizeof(meta), "%s - %s", localArtist, localTitle);
           strlcpy(config.station.title, meta, sizeof(config.station.title));
           netserver.requestOnChange(TITLE, 0);
           telnet.printf("##CLI.META#: %s\r\n", meta);
@@ -331,63 +333,75 @@ void loop()
   // Heartbeat/timeout: only mark disconnected when we had active playback
   // or while awaiting an ACK. If the phone is connected but idle (not sending metadata),
   // keep `connected` true so the link appears persistent.
-  if (btMeta.connected && btMeta.lastSeen > 0 && (millis() - btMeta.lastSeen) > BT_HEARTBEAT_TIMEOUT_MS)
+  // Snapshot btMeta under mutex to avoid torn reads while deciding heartbeat
   {
-    bool shouldDisconnect = false;
-    if (btMeta.awaitingAck)
-      shouldDisconnect = true;
-    if (btMeta.playing)
-      shouldDisconnect = true;
+    // Snapshot whole metadata for heartbeat decision
+    bt_metadata_t local;
+    bt_meta_snapshot(&local);
+    bool connected = local.connected;
+    uint32_t lastSeen = local.lastSeen;
+    bool awaitingAck = local.awaitingAck;
+    bool playing = local.playing;
+    bool probeSent = local.probeSent;
+    uint32_t probeDeadline = local.probeDeadline;
 
-    if (shouldDisconnect)
+    if (connected && lastSeen > 0 && (millis() - lastSeen) > BT_HEARTBEAT_TIMEOUT_MS)
     {
-      // if we haven't probed yet, send a single STATUS probe and wait for response
-      if (!btMeta.probeSent)
+      bool shouldDisconnect = false;
+      if (awaitingAck)
+        shouldDisconnect = true;
+      if (playing)
+        shouldDisconnect = true;
+
+      if (shouldDisconnect)
       {
-        Serial.println("BT: sending STATUS probe before disconnect");
-        btSerial.println("STATUS");
-        if (btMetaMutex)
-          xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
-        btMeta.probeSent = true;
-        btMeta.probeDeadline = millis() + BT_ACK_TIMEOUT_MS;
-        if (btMetaMutex)
-          xSemaphoreGive(btMetaMutex);
-      }
-      else
-      {
-        // probe already sent and expired -> perform disconnect
-        if (btMeta.probeDeadline > 0 && millis() > btMeta.probeDeadline)
+        // if we haven't probed yet, send a single STATUS probe and wait for response
+        if (!probeSent)
         {
+          Serial.println("BT: sending STATUS probe before disconnect");
+          btSerial.println("STATUS");
           if (btMetaMutex)
             xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
-          btMeta.connected = false;
-          btMeta.playing = false;
-          btMeta.awaitingAck = false;
-          btMeta.ackDeadline = 0;
-          btMeta.probeSent = false;
-          btMeta.probeDeadline = 0;
-          // set artist to indicate no connection
-          strlcpy(btMeta.artist, "Brak połaczenia", sizeof(btMeta.artist));
-          memset(btMeta.title, 0, sizeof(btMeta.title));
+          btMeta.probeSent = true;
+          btMeta.probeDeadline = millis() + BT_ACK_TIMEOUT_MS;
           if (btMetaMutex)
             xSemaphoreGive(btMetaMutex);
-          Serial.println("BT: heartbeat probe expired — marked disconnected");
-          if (config.getMode() == PM_BLUETOOTH)
+        }
+        else
+        {
+          // probe already sent and expired -> perform disconnect
+          if (probeDeadline > 0 && millis() > probeDeadline)
           {
-            display.putRequest(NEWTITLE);
+            if (btMetaMutex)
+              xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+            btMeta.connected = false;
+            btMeta.playing = false;
+            btMeta.awaitingAck = false;
+            btMeta.ackDeadline = 0;
+            btMeta.probeSent = false;
+            btMeta.probeDeadline = 0;
+            // set artist to indicate no connection
+            strlcpy(btMeta.artist, "Brak połaczenia", sizeof(btMeta.artist));
+            memset(btMeta.title, 0, sizeof(btMeta.title));
+            if (btMetaMutex)
+              xSemaphoreGive(btMetaMutex);
+            Serial.println("BT: heartbeat probe expired — marked disconnected");
+            if (config.getMode() == PM_BLUETOOTH)
+            {
+              display.putRequest(NEWTITLE);
+            }
           }
         }
       }
     }
-    else
+  }
+  {
+    // idle connected device: keep `connected=true`; optionally log low-frequency
+    static uint32_t lastIdleLog = 0;
+    if (millis() - lastIdleLog > 60000)
     {
-      // idle connected device: keep `connected=true`; optionally log low-frequency
-      static uint32_t lastIdleLog = 0;
-      if (millis() - lastIdleLog > 60000)
-      {
-        lastIdleLog = millis();
-        Serial.println("BT: idle — no metadata recently, keeping connected");
-      }
+      lastIdleLog = millis();
+      Serial.println("BT: idle — no metadata recently, keeping connected");
     }
   }
 

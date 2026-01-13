@@ -30,6 +30,18 @@ Config config;
 bt_metadata_t btMeta;
 SemaphoreHandle_t btMetaMutex = NULL;
 
+// Snapshot helper: copy btMeta into provided buffer under mutex
+void bt_meta_snapshot(bt_metadata_t *out)
+{
+  if (!out)
+    return;
+  if (btMetaMutex)
+    xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+  *out = btMeta;
+  if (btMetaMutex)
+    xSemaphoreGive(btMetaMutex);
+}
+
 void u8fix(char *src)
 { // Ha az utolsó tőbbájtos karakter (ékezetes) utolsó bájtja hiányzik akkor az elejét levágja.
   char last = src[strlen(src) - 1];

@@ -400,4 +400,7 @@ struct bt_metadata_t
 extern bt_metadata_t btMeta;
 extern SemaphoreHandle_t btMetaMutex;
 
+// Copy current btMeta into caller-provided buffer under mutex
+void bt_meta_snapshot(bt_metadata_t *out);
+
 #endif
