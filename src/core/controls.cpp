@@ -468,6 +468,11 @@ void onBtnLongPressStart(int id)
 #if defined(DUMMYDISPLAY)
     break;
 #endif
+    // Dla źródeł zewnętrznych (BT, AUX1, AUX2) przytrzymanie nic nie robi
+    if (config.getMode() == PM_BLUETOOTH || config.getMode() == PM_TV || config.getMode() == PM_AUX)
+    {
+      break;
+    }
     display.putRequest(NEWMODE, display.mode() == PLAYER ? VOL : PLAYER);
     break;
   }

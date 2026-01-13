@@ -585,6 +585,19 @@ void Display::loop()
         { // csak a lejátszás képernyőn frissíti a bitrateWidgetet
           if (config.getMode() == PM_WEB || config.getMode() == PM_SDCARD)
           {
+            // If bitrate was cleared while switching sources, try to read
+            // current value from the player audio engine (useful when
+            // returning to WEB mode without a fresh evt_bitrate).
+            if (config.station.bitrate == 0 && config.getMode() == PM_WEB)
+            {
+              uint32_t cur = player.getBitRate();
+              if (cur > 0)
+              {
+                if (cur > 3000) // convert b/s to kb/s like audio_bitrate()
+                  cur = cur / 1000;
+                config.station.bitrate = static_cast<uint16_t>(cur);
+              }
+            }
             char buf[20];
             snprintf(buf, 20, bitrateFmt, config.station.bitrate);
             if (_bitrate)
@@ -747,7 +760,7 @@ void Display::_setRSSI(int rssi)
 void Display::_station()
 {
   _meta->setAlign(metaConf.widget.align);
-  if (config.getMode() == PM_WEB || config.getMode() == PM_SDCARD)
+  if (config.getMode() == PM_WEB)
   {
     if (config.station.name[0] == '.')
     {
@@ -757,6 +770,10 @@ void Display::_station()
     {
       _meta->setText(config.station.name);
     }
+  }
+  else if (config.getMode() == PM_SDCARD)
+  {
+    _meta->setText(SRC_SD_NAME);
   }
   else
   {
@@ -847,6 +864,27 @@ void Display::_title()
     strlcpy(config.station.title, "", sizeof(config.station.title));
     netserver.requestOnChange(TITLE, 0);
     return;
+  }
+  if (config.getMode() == PM_SDCARD)
+  {
+    if (digitalRead(SD_DETECT_PIN) == HIGH)
+    {
+      _title1->setText("Brak karty SD!");
+      if (_title2)
+        _title2->setText("");
+      strlcpy(config.station.title, "", sizeof(config.station.title));
+      netserver.requestOnChange(TITLE, 0);
+      return;
+    }
+    else
+    {
+      _title1->setText("");
+      if (_title2)
+        _title2->setText("");
+      strlcpy(config.station.title, "", sizeof(config.station.title));
+      netserver.requestOnChange(TITLE, 0);
+      return;
+    }
   }
   if (strlen(config.station.title) == 0)
   {
