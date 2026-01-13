@@ -847,6 +847,15 @@ void Display::_title()
       {
         localArtist[0] = '\0';
       }
+      // If the phone reports the device name as ARTIST/TITLE (common on Android),
+      // treat it as empty so we don't duplicate the device name on all lines.
+      if (stationText.length() > 0)
+      {
+        if (strcasecmp(localArtist, stationText.c_str()) == 0)
+          localArtist[0] = '\0';
+        if (strcasecmp(localTitle, stationText.c_str()) == 0)
+          localTitle[0] = '\0';
+      }
 
       // If no metadata yet, show device name + 'Połączony' on second line
       if (strlen(localArtist) == 0 && strlen(localTitle) == 0)
