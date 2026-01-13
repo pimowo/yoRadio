@@ -176,7 +176,7 @@ void Config::changeMode(int newmode)
 {
   Serial.println("Change mode called");
   // remember previous play mode to detect leaving WEB (radio)
-  playMode_e oldMode = getMode();
+  playMode_e oldMode = (playMode_e)getMode();
   if (newmode < 0 || newmode > 4)
   {
     // Explicitly cycle through modes in desired order and check availability flags
@@ -230,22 +230,24 @@ void Config::changeMode(int newmode)
   }
   saveValue(&store.play_mode, store.play_mode, true, true);
 
-    // If we are leaving WEB (internet radio) stop the player immediately
-    playMode_e newMode = (playMode_e)store.play_mode;
-    if (oldMode == PM_WEB && newMode != PM_WEB)
+  // If we are leaving WEB (internet radio) stop the player immediately
+  playMode_e newMode = (playMode_e)store.play_mode;
+  if (oldMode == PM_WEB && newMode != PM_WEB)
+  {
+    if (player.isRunning())
     {
-      if (player.isRunning())
-      {
-        Serial.println("Mode change: leaving WEB -> stopping player");
-        player._stop(false); // synchronous stop
-      }
-      // clear bitrate/watchdog state when leaving stream
-      player.waitingBitrate = false;
-      station.bitrate = 0;
-      setBitrateFormat(BF_UNKNOWN);
-      netserver.requestOnChange(BITRATE, 0);
-      display.putRequest(DBITRATE);
+      Serial.println("Mode change: leaving WEB -> stopping player");
+      player.sendCommand({PR_STOP, 0});
+      // process queue once to try to stop immediately
+      player.loop();
     }
+    // clear bitrate/watchdog state when leaving stream
+    player.waitingBitrate = false;
+    station.bitrate = 0;
+    setBitrateFormat(BF_UNKNOWN);
+    netserver.requestOnChange(BITRATE, 0);
+    display.putRequest(DBITRATE);
+  }
   // if (store.play_mode == PM_BLUETOOTH)
   // {
   //   btSerial.println("RESET");
