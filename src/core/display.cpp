@@ -838,32 +838,43 @@ void Display::_title()
       if (btMetaMutex)
         xSemaphoreGive(btMetaMutex);
 
-      String artistText = "";
-      if (strlen(localArtist) > 0)
+      // If no metadata yet, show device name + 'Połączony' on second line
+      if (strlen(localArtist) == 0 && strlen(localTitle) == 0)
       {
-        artistText = localArtist;
+        _title1->setText("Połączony");
+        if (_title2)
+          _title2->setText("");
+        strlcpy(config.station.title, "", sizeof(config.station.title));
       }
       else
       {
-        artistText = stationText; // fallback
-      }
-      _title1->setText(artistText.c_str());
+        String artistText = "";
+        if (strlen(localArtist) > 0)
+        {
+          artistText = localArtist;
+        }
+        else
+        {
+          artistText = stationText; // fallback
+        }
+        _title1->setText(artistText.c_str());
 
-      String titleText = "";
-      if (strlen(localTitle) > 0)
-      {
-        titleText = localTitle;
+        String titleText = "";
+        if (strlen(localTitle) > 0)
+        {
+          titleText = localTitle;
+        }
+        else
+        {
+          titleText = stationText; // fallback
+        }
+        if (_title2)
+        {
+          _title2->setText(titleText.c_str());
+        }
+        String meta = artistText + " - " + titleText;
+        strlcpy(config.station.title, meta.c_str(), sizeof(config.station.title));
       }
-      else
-      {
-        titleText = stationText; // fallback
-      }
-      if (_title2)
-      {
-        _title2->setText(titleText.c_str());
-      }
-      String meta = artistText + " - " + titleText;
-      strlcpy(config.station.title, meta.c_str(), sizeof(config.station.title));
     }
     else
     {
