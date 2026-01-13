@@ -390,6 +390,8 @@ struct bt_metadata_t
   bool awaitingAck = false;
   uint32_t ackDeadline = 0;
   bool expectedPlaying = false;
+  // heartbeat: timestamp of last received BT message (millis())
+  uint32_t lastSeen = 0;
 };
 
 extern bt_metadata_t btMeta;

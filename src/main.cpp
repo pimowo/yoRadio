@@ -328,6 +328,29 @@ void loop()
     Serial.println("BT: ACK timeout for PLAY/PAUSE");
   }
 
+  // Heartbeat/timeout: if we've seen no BT messages for a while, mark disconnected
+  if (btMeta.connected && btMeta.lastSeen > 0 && (millis() - btMeta.lastSeen) > BT_HEARTBEAT_TIMEOUT_MS)
+  {
+    if (btMetaMutex)
+      xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+    btMeta.connected = false;
+    btMeta.playing = false;
+    btMeta.awaitingAck = false;
+    btMeta.ackDeadline = 0;
+    // clear fields
+    memset(btMeta.deviceName, 0, sizeof(btMeta.deviceName));
+    memset(btMeta.deviceMAC, 0, sizeof(btMeta.deviceMAC));
+    memset(btMeta.artist, 0, sizeof(btMeta.artist));
+    memset(btMeta.title, 0, sizeof(btMeta.title));
+    if (btMetaMutex)
+      xSemaphoreGive(btMetaMutex);
+    Serial.println("BT: heartbeat timeout — marked disconnected");
+    if (config.getMode() == PM_BLUETOOTH)
+    {
+      display.putRequest(NEWTITLE);
+    }
+  }
+
   if (network.status == CONNECTED || network.status == SDREADY)
   {
     player.loop();

@@ -29,6 +29,12 @@ void bluetooth_handle_line(const char *line)
         return;
     if (strncmp(line, "BT:", 3) != 0)
         return;
+    // Update lastSeen timestamp for heartbeat detection
+    if (btMetaMutex)
+        xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+    btMeta.lastSeen = millis();
+    if (btMetaMutex)
+        xSemaphoreGive(btMetaMutex);
     char cmd[32] = {0};
     char value[256] = {0};
     const char *p = line + 3;
