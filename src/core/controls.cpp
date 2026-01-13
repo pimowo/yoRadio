@@ -747,11 +747,9 @@ void onBtnDoubleClick(int id)
   }
   switch ((controlEvt_e)id)
   {
-  case EVT_BTNCENTER:
   case EVT_ENCBTNB:
-  case EVT_ENC2BTNB:
   {
-    // Dwuklik enkodera/środkowego przycisku wyłącznie przełącza źródło dźwięku
+    // Dwuklik PRZYCISKU enkodera tylko przełącza źródło dźwięku
     onBtnClick(EVT_BTNSOURCE);
     break;
   }
