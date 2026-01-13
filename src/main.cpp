@@ -341,23 +341,42 @@ void loop()
 
     if (shouldDisconnect)
     {
-      if (btMetaMutex)
-        xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
-      btMeta.connected = false;
-      btMeta.playing = false;
-      btMeta.awaitingAck = false;
-      btMeta.ackDeadline = 0;
-      // clear fields
-      memset(btMeta.deviceName, 0, sizeof(btMeta.deviceName));
-      memset(btMeta.deviceMAC, 0, sizeof(btMeta.deviceMAC));
-      memset(btMeta.artist, 0, sizeof(btMeta.artist));
-      memset(btMeta.title, 0, sizeof(btMeta.title));
-      if (btMetaMutex)
-        xSemaphoreGive(btMetaMutex);
-      Serial.println("BT: heartbeat timeout — marked disconnected");
-      if (config.getMode() == PM_BLUETOOTH)
+      // if we haven't probed yet, send a single STATUS probe and wait for response
+      if (!btMeta.probeSent)
       {
-        display.putRequest(NEWTITLE);
+        Serial.println("BT: sending STATUS probe before disconnect");
+        btSerial.println("STATUS");
+        if (btMetaMutex)
+          xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+        btMeta.probeSent = true;
+        btMeta.probeDeadline = millis() + BT_ACK_TIMEOUT_MS;
+        if (btMetaMutex)
+          xSemaphoreGive(btMetaMutex);
+      }
+      else
+      {
+        // probe already sent and expired -> perform disconnect
+        if (btMeta.probeDeadline > 0 && millis() > btMeta.probeDeadline)
+        {
+          if (btMetaMutex)
+            xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+          btMeta.connected = false;
+          btMeta.playing = false;
+          btMeta.awaitingAck = false;
+          btMeta.ackDeadline = 0;
+          btMeta.probeSent = false;
+          btMeta.probeDeadline = 0;
+          // set artist to indicate no connection
+          strlcpy(btMeta.artist, "Brak połaczenia", sizeof(btMeta.artist));
+          memset(btMeta.title, 0, sizeof(btMeta.title));
+          if (btMetaMutex)
+            xSemaphoreGive(btMetaMutex);
+          Serial.println("BT: heartbeat probe expired — marked disconnected");
+          if (config.getMode() == PM_BLUETOOTH)
+          {
+            display.putRequest(NEWTITLE);
+          }
+        }
       }
     }
     else

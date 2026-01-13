@@ -29,10 +29,12 @@ void bluetooth_handle_line(const char *line)
         return;
     if (strncmp(line, "BT:", 3) != 0)
         return;
-    // Update lastSeen timestamp for heartbeat detection
+    // Update lastSeen timestamp for heartbeat detection and clear any probe state
     if (btMetaMutex)
         xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
     btMeta.lastSeen = millis();
+    btMeta.probeSent = false;
+    btMeta.probeDeadline = 0;
     if (btMetaMutex)
         xSemaphoreGive(btMetaMutex);
     char cmd[32] = {0};
@@ -63,6 +65,9 @@ void bluetooth_handle_line(const char *line)
         btMeta.connected = true;
         memset(btMeta.artist, 0, sizeof(btMeta.artist));
         memset(btMeta.title, 0, sizeof(btMeta.title));
+        // clear any probe state and ensure artist empty on connect
+        btMeta.probeSent = false;
+        btMeta.probeDeadline = 0;
         if (btMetaMutex)
             xSemaphoreGive(btMetaMutex);
         Serial.println("BT: Connected set to true");
@@ -77,7 +82,8 @@ void bluetooth_handle_line(const char *line)
         btMeta.connected = false;
         memset(btMeta.deviceName, 0, sizeof(btMeta.deviceName));
         memset(btMeta.deviceMAC, 0, sizeof(btMeta.deviceMAC));
-        memset(btMeta.artist, 0, sizeof(btMeta.artist));
+        // set artist to Polish 'Brak połączenia' when no device connected
+        strlcpy(btMeta.artist, "Brak połaczenia", sizeof(btMeta.artist));
         memset(btMeta.title, 0, sizeof(btMeta.title));
         if (btMetaMutex)
             xSemaphoreGive(btMetaMutex);

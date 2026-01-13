@@ -392,6 +392,9 @@ struct bt_metadata_t
   bool expectedPlaying = false;
   // heartbeat: timestamp of last received BT message (millis())
   uint32_t lastSeen = 0;
+  // probe before disconnect: we send a STATUS ping once and wait probeDeadline
+  bool probeSent = false;
+  uint32_t probeDeadline = 0;
 };
 
 extern bt_metadata_t btMeta;
