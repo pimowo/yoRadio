@@ -15,6 +15,7 @@ extern HardwareSerial btSerial;
 extern HardwareSerial btSerial;
 #include "rtcsupport.h"
 #include "../displays/tools/l10n.h"
+#include <freertos/semphr.h>
 #ifdef USE_SD
 #include "sdmanager.h"
 #endif
@@ -27,6 +28,7 @@ extern HardwareSerial btSerial;
 Config config;
 
 bt_metadata_t btMeta;
+SemaphoreHandle_t btMetaMutex = NULL;
 
 void u8fix(char *src)
 { // Ha az utolsó tőbbájtos karakter (ékezetes) utolsó bájtja hiányzik akkor az elejét levágja.

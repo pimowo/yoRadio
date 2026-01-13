@@ -828,10 +828,18 @@ void Display::_title()
 
     if (btMeta.connected)
     {
+      // copy under mutex to avoid torn reads
+      char localArtist[sizeof(btMeta.artist)];
+      char localTitle[sizeof(btMeta.title)];
+      if (btMetaMutex) xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+      strlcpy(localArtist, btMeta.artist, sizeof(localArtist));
+      strlcpy(localTitle, btMeta.title, sizeof(localTitle));
+      if (btMetaMutex) xSemaphoreGive(btMetaMutex);
+
       String artistText = "";
-      if (strlen(btMeta.artist) > 0)
+      if (strlen(localArtist) > 0)
       {
-        artistText = btMeta.artist;
+        artistText = localArtist;
       }
       else
       {
@@ -840,9 +848,9 @@ void Display::_title()
       _title1->setText(artistText.c_str());
 
       String titleText = "";
-      if (strlen(btMeta.title) > 0)
+      if (strlen(localTitle) > 0)
       {
-        titleText = btMeta.title;
+        titleText = localTitle;
       }
       else
       {

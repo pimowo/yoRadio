@@ -371,16 +371,21 @@ extern SPIClass SPI2;
 #endif
 
 // Bluetooth metadata structure
+#include <freertos/FreeRTOS.h>
+#include <freertos/semphr.h>
+
 struct bt_metadata_t
 {
   char deviceName[64] = "";
   char deviceMAC[18] = "";
-  char artist[256] = "";
-  char title[256] = "";
+  // ograniczamy metadane do 128 znaków, by zmniejszyć zużycie RAM
+  char artist[128] = "";
+  char title[128] = "";
   bool connected = false;
   bool playing = false;
 };
 
 extern bt_metadata_t btMeta;
+extern SemaphoreHandle_t btMetaMutex;
 
 #endif
