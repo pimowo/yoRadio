@@ -328,26 +328,47 @@ void loop()
     Serial.println("BT: ACK timeout for PLAY/PAUSE");
   }
 
-  // Heartbeat/timeout: if we've seen no BT messages for a while, mark disconnected
+  // Heartbeat/timeout: only mark disconnected when we had active playback
+  // or while awaiting an ACK. If the phone is connected but idle (not sending metadata),
+  // keep `connected` true so the link appears persistent.
   if (btMeta.connected && btMeta.lastSeen > 0 && (millis() - btMeta.lastSeen) > BT_HEARTBEAT_TIMEOUT_MS)
   {
-    if (btMetaMutex)
-      xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
-    btMeta.connected = false;
-    btMeta.playing = false;
-    btMeta.awaitingAck = false;
-    btMeta.ackDeadline = 0;
-    // clear fields
-    memset(btMeta.deviceName, 0, sizeof(btMeta.deviceName));
-    memset(btMeta.deviceMAC, 0, sizeof(btMeta.deviceMAC));
-    memset(btMeta.artist, 0, sizeof(btMeta.artist));
-    memset(btMeta.title, 0, sizeof(btMeta.title));
-    if (btMetaMutex)
-      xSemaphoreGive(btMetaMutex);
-    Serial.println("BT: heartbeat timeout — marked disconnected");
-    if (config.getMode() == PM_BLUETOOTH)
+    bool shouldDisconnect = false;
+    if (btMeta.awaitingAck)
+      shouldDisconnect = true;
+    if (btMeta.playing)
+      shouldDisconnect = true;
+
+    if (shouldDisconnect)
     {
-      display.putRequest(NEWTITLE);
+      if (btMetaMutex)
+        xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+      btMeta.connected = false;
+      btMeta.playing = false;
+      btMeta.awaitingAck = false;
+      btMeta.ackDeadline = 0;
+      // clear fields
+      memset(btMeta.deviceName, 0, sizeof(btMeta.deviceName));
+      memset(btMeta.deviceMAC, 0, sizeof(btMeta.deviceMAC));
+      memset(btMeta.artist, 0, sizeof(btMeta.artist));
+      memset(btMeta.title, 0, sizeof(btMeta.title));
+      if (btMetaMutex)
+        xSemaphoreGive(btMetaMutex);
+      Serial.println("BT: heartbeat timeout — marked disconnected");
+      if (config.getMode() == PM_BLUETOOTH)
+      {
+        display.putRequest(NEWTITLE);
+      }
+    }
+    else
+    {
+      // idle connected device: keep `connected=true`; optionally log low-frequency
+      static uint32_t lastIdleLog = 0;
+      if (millis() - lastIdleLog > 60000)
+      {
+        lastIdleLog = millis();
+        Serial.println("BT: idle — no metadata recently, keeping connected");
+      }
     }
   }
 
