@@ -831,10 +831,12 @@ void Display::_title()
       // copy under mutex to avoid torn reads
       char localArtist[sizeof(btMeta.artist)];
       char localTitle[sizeof(btMeta.title)];
-      if (btMetaMutex) xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+      if (btMetaMutex)
+        xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
       strlcpy(localArtist, btMeta.artist, sizeof(localArtist));
       strlcpy(localTitle, btMeta.title, sizeof(localTitle));
-      if (btMetaMutex) xSemaphoreGive(btMetaMutex);
+      if (btMetaMutex)
+        xSemaphoreGive(btMetaMutex);
 
       String artistText = "";
       if (strlen(localArtist) > 0)

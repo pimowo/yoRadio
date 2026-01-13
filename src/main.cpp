@@ -55,11 +55,13 @@ void parseBTMessage(String msg)
 
     if (cmd == "CONNECTED")
     {
-      if (btMetaMutex) xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+      if (btMetaMutex)
+        xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
       btMeta.connected = true;
       memset(btMeta.artist, 0, sizeof(btMeta.artist));
       memset(btMeta.title, 0, sizeof(btMeta.title));
-      if (btMetaMutex) xSemaphoreGive(btMetaMutex);
+      if (btMetaMutex)
+        xSemaphoreGive(btMetaMutex);
       Serial.println("BT: Connected set to true"); // Debug
       // Update display if in BT mode
       if (config.getMode() == PM_BLUETOOTH)
@@ -69,13 +71,15 @@ void parseBTMessage(String msg)
     }
     else if (cmd == "DISCONNECTED")
     {
-      if (btMetaMutex) xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+      if (btMetaMutex)
+        xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
       btMeta.connected = false;
       memset(btMeta.deviceName, 0, sizeof(btMeta.deviceName));
       memset(btMeta.deviceMAC, 0, sizeof(btMeta.deviceMAC));
       memset(btMeta.artist, 0, sizeof(btMeta.artist));
       memset(btMeta.title, 0, sizeof(btMeta.title));
-      if (btMetaMutex) xSemaphoreGive(btMetaMutex);
+      if (btMetaMutex)
+        xSemaphoreGive(btMetaMutex);
       if (config.getMode() == PM_BLUETOOTH)
       {
         display.putRequest(NEWTITLE);
@@ -83,14 +87,16 @@ void parseBTMessage(String msg)
     }
     else if (cmd == "NAME")
     {
-      if (btMetaMutex) xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+      if (btMetaMutex)
+        xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
       if (!btMeta.connected)
       {
         btMeta.connected = true;
         Serial.println("BT: Connected set to true from NAME"); // Debug
       }
       strlcpy(btMeta.deviceName, value.c_str(), sizeof(btMeta.deviceName));
-      if (btMetaMutex) xSemaphoreGive(btMetaMutex);
+      if (btMetaMutex)
+        xSemaphoreGive(btMetaMutex);
       if (config.getMode() == PM_BLUETOOTH)
       {
         display.putRequest(NEWTITLE);
@@ -98,20 +104,24 @@ void parseBTMessage(String msg)
     }
     else if (cmd == "MAC")
     {
-      if (btMetaMutex) xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+      if (btMetaMutex)
+        xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
       strlcpy(btMeta.deviceMAC, value.c_str(), sizeof(btMeta.deviceMAC));
-      if (btMetaMutex) xSemaphoreGive(btMetaMutex);
+      if (btMetaMutex)
+        xSemaphoreGive(btMetaMutex);
     }
     else if (cmd == "ARTIST")
     {
-      if (btMetaMutex) xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+      if (btMetaMutex)
+        xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
       if (!btMeta.connected)
       {
         btMeta.connected = true;
         Serial.println("BT: Connected set to true from ARTIST"); // Debug
       }
       strlcpy(btMeta.artist, value.c_str(), sizeof(btMeta.artist));
-      if (btMetaMutex) xSemaphoreGive(btMetaMutex);
+      if (btMetaMutex)
+        xSemaphoreGive(btMetaMutex);
       if (config.getMode() == PM_BLUETOOTH)
       {
         display.putRequest(NEWTITLE);
@@ -119,7 +129,8 @@ void parseBTMessage(String msg)
     }
     else if (cmd == "TITLE")
     {
-      if (btMetaMutex) xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+      if (btMetaMutex)
+        xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
       if (!btMeta.connected)
       {
         btMeta.connected = true;
@@ -129,7 +140,8 @@ void parseBTMessage(String msg)
       // copy local copy of artist to build meta safely
       char localArtist[sizeof(btMeta.artist)];
       strlcpy(localArtist, btMeta.artist, sizeof(localArtist));
-      if (btMetaMutex) xSemaphoreGive(btMetaMutex);
+      if (btMetaMutex)
+        xSemaphoreGive(btMetaMutex);
       if (config.getMode() == PM_BLUETOOTH)
       {
         display.putRequest(NEWTITLE);
@@ -145,15 +157,19 @@ void parseBTMessage(String msg)
     }
     else if (cmd == "PLAYING")
     {
-      if (btMetaMutex) xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+      if (btMetaMutex)
+        xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
       btMeta.playing = true;
-      if (btMetaMutex) xSemaphoreGive(btMetaMutex);
+      if (btMetaMutex)
+        xSemaphoreGive(btMetaMutex);
     }
     else if (cmd == "STOPPED")
     {
-      if (btMetaMutex) xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+      if (btMetaMutex)
+        xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
       btMeta.playing = false;
-      if (btMetaMutex) xSemaphoreGive(btMetaMutex);
+      if (btMetaMutex)
+        xSemaphoreGive(btMetaMutex);
       if (config.getMode() == PM_BLUETOOTH)
       {
         memset(config.station.title, 0, sizeof(config.station.title));
@@ -275,14 +291,27 @@ void loop()
   timekeeper.loop1();
   telnet.loop();
 
-  // Parse Bluetooth UART messages
+  // Parse Bluetooth UART messages using C buffer (avoid String)
   while (btSerial.available())
   {
-    String msg = btSerial.readStringUntil('\n');
-    msg.trim();
-    if (msg.length() > 0)
+    char buf[256];
+    int len = btSerial.readBytesUntil('\n', buf, sizeof(buf) - 1);
+    if (len <= 0)
+      break;
+    buf[len] = '\0';
+    // trim leading/trailing whitespace
+    char *s = buf;
+    while (*s && isspace((unsigned char)*s))
+      s++;
+    char *end = s + strlen(s) - 1;
+    while (end >= s && isspace((unsigned char)*end))
     {
-      parseBTMessage(msg);
+      *end = '\0';
+      end--;
+    }
+    if (strlen(s) > 0)
+    {
+      bluetooth_handle_line(s);
     }
   }
 
