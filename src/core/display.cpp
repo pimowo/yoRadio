@@ -762,6 +762,17 @@ void Display::_station()
   _meta->setAlign(metaConf.widget.align);
   if (config.getMode() == PM_WEB)
   {
+    // If returning to WEB mode but player isn't running, show placeholder
+    if (!player.isRunning())
+    {
+      _meta->setText("yoRadio");
+      // Clear title/artist area so it doesn't show previous metadata
+      if (_title1)
+        _title1->setText("");
+      if (_title2)
+        _title2->setText("");
+      return;
+    }
     if (config.station.name[0] == '.')
     {
       _meta->setText(config.station.name + 1);

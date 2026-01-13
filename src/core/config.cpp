@@ -318,22 +318,27 @@ void Config::changeMode(int newmode)
   }
   if (!_bootDone)
     return;
-  if (getMode() == PM_WEB || getMode() == PM_SDCARD)
+  // Start playback automatically only for SD mode. For WEB (internet radio)
+  // we return to stopped state and show a placeholder on the display.
+  if (getMode() == PM_SDCARD)
   {
     Serial.print("Starting play for mode: ");
     Serial.println(getMode());
-    player.sendCommand({PR_PLAY, getMode() == PM_WEB ? store.lastStation : store.lastSdStation});
+    player.sendCommand({PR_PLAY, store.lastSdStation});
   }
   if (getMode() == PM_WEB)
   {
+    // Prepare station data but do NOT auto-start playback.
     loadStation(store.lastStation > 0 ? store.lastStation : 1);
-    // Wait a bit for the connection to start and metadata to arrive, then request bitrate update
-    for (int i = 0; i < 5; ++i)
+    // Request bitrate refresh (will be empty until play starts and metadata arrives)
+    for (int i = 0; i < 3; ++i)
     {
-      delay(400);
+      delay(200);
       display.putRequest(DBITRATE);
       Serial.println("Requested DBITRATE refresh");
     }
+    // ensure player is stopped
+    player.sendCommand({PR_STOP, 0});
   }
 #endif
   netserver.resetQueue();
