@@ -761,7 +761,8 @@ void onBtnDoubleClick(int id)
   case EVT_ENC2BTNB:
   {
     // display.putRequest(NEWMODE, display.mode() == PLAYER ? VOL : PLAYER);
-    onBtnClick(EVT_BTNMODE);
+    // support source change via encoder double-click as well as SRC_BTN
+    onBtnClick(EVT_BTNSOURCE);
     break;
   }
   case EVT_BTNRIGHT:
