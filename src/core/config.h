@@ -7,6 +7,7 @@
 #include <SPIFFS.h>
 #include <EEPROM.h>
 #include "../displays/widgets/widgetsconfig.h" //BitrateFormat
+#include "options.h"
 
 #define EEPROM_SIZE 768
 #define EEPROM_START 500

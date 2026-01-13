@@ -6,6 +6,7 @@
 #include "core/telnet.h"
 #include "core/player.h"
 #include "core/display.h"
+#include "core/bluetooth_uart.h"
 
 #include "core/network.h"
 #include "core/netserver.h"

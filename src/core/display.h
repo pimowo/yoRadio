@@ -109,7 +109,7 @@ public:
   void unlock() {}
   uint16_t width() { return 0; }
   uint16_t height() { return 0; }
-  void switchToPlayer() { _swichMode(PLAYER); }
+  void switchToPlayer() { mode(PLAYER); }
 
 private:
   void _createDspTask();
