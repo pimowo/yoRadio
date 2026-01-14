@@ -765,7 +765,7 @@ void Display::_station()
     // If returning to WEB mode but player isn't running, show placeholder
     if (!player.isRunning())
     {
-      _meta->setText("yoRadio");
+      _meta->setText(SRC_WEB_NAME);
       // Clear title/artist area so it doesn't show previous metadata
       if (_title1)
         _title1->setText("");
@@ -898,8 +898,8 @@ void Display::_title()
     }
     else
     {
-      // not connected -> show 'Brak połączenia' on the second line
-      _title1->setText("Brak połączenia");
+      // not connected -> show configured 'no connection' text on the second line
+      _title1->setText(SRC_BT_NAME2);
       if (_title2)
       {
         _title2->setText("");
@@ -934,7 +934,7 @@ void Display::_title()
   {
     if (digitalRead(SD_DETECT_PIN) == HIGH)
     {
-      _title1->setText("Brak karty SD!");
+      _title1->setText(SRC_SD_NAME2);
       if (_title2)
         _title2->setText("");
       strlcpy(config.station.title, "", sizeof(config.station.title));
@@ -996,7 +996,7 @@ void Display::_time(bool redraw)
   if (config.store.dspon)
   {
     config.store.brightness = AUTOBACKLIGHT(analogRead(LIGHT_SENSOR));
-    config.setBrightness();
+    _title1->setText(SRC_BT_NAME2);
   }
 #endif
   if (config.isScreensaver && network.timeinfo.tm_sec % 60 == 0)

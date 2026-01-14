@@ -255,7 +255,7 @@ public:
     switch ((playMode_e)mode)
     {
     case PM_WEB:
-      return "yoRadio";
+      return SRC_WEB_NAME;
     case PM_SDCARD:
       return "SD Card";
     case PM_BLUETOOTH:
