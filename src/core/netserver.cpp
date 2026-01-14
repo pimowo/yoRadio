@@ -385,15 +385,89 @@ void NetServer::processQueue()
       requestOnChange(ITEM, clientId);
       break;
     case STATIONNAME:
-      sprintf(wsBuf, "{\"payload\":[{\"id\":\"nameset\", \"value\": \"%s\"}]}", config.station.name);
-      break;
+    {
+      if (config.getMode() == PM_BLUETOOTH)
+      {
+        bt_metadata_t local;
+        bt_meta_snapshot(&local);
+        char nameBuf[128] = "";
+        if (strlen(local.deviceName) > 0)
+        {
+          if (strncmp(local.deviceName, "BT:", 3) != 0)
+            snprintf(nameBuf, sizeof(nameBuf), "BT:%s", local.deviceName);
+          else
+            snprintf(nameBuf, sizeof(nameBuf), "%s", local.deviceName);
+        }
+        else if (strlen(local.deviceMAC) > 0)
+        {
+          snprintf(nameBuf, sizeof(nameBuf), "BT:%s", local.deviceMAC);
+        }
+        else
+        {
+          snprintf(nameBuf, sizeof(nameBuf), "%s", SRC_BT_NAME);
+        }
+        snprintf(wsBuf, sizeof(wsBuf), "{\"payload\":[{\"id\":\"nameset\", \"value\": \"%s\"}]}", nameBuf);
+      }
+      else if (config.getMode() == PM_TV)
+      {
+        snprintf(wsBuf, sizeof(wsBuf), "{\"payload\":[{\"id\":\"nameset\", \"value\": \"%s\"}]}", SRC_AUX1_NAME);
+      }
+      else if (config.getMode() == PM_AUX)
+      {
+        snprintf(wsBuf, sizeof(wsBuf), "{\"payload\":[{\"id\":\"nameset\", \"value\": \"%s\"}]}", SRC_AUX2_NAME);
+      }
+      else
+      {
+        snprintf(wsBuf, sizeof(wsBuf), "{\"payload\":[{\"id\":\"nameset\", \"value\": \"%s\"}]}", config.station.name);
+      }
+    }
+    break;
     case ITEM:
       sprintf(wsBuf, "{\"current\": %d}", config.lastStation());
       break;
     case TITLE:
-      sprintf(wsBuf, "{\"payload\":[{\"id\":\"meta\", \"value\": \"%s\"}]}", config.station.title);
-      telnet.printf("##CLI.META#: %s\r\n> ", config.station.title);
-      break;
+    {
+      if (config.getMode() == PM_BLUETOOTH)
+      {
+        bt_metadata_t local;
+        bt_meta_snapshot(&local);
+        char metaBuf[256] = "";
+        if (strlen(local.artist) > 0 && strlen(local.title) > 0)
+        {
+          snprintf(metaBuf, sizeof(metaBuf), "%s - %s", local.artist, local.title);
+        }
+        else if (strlen(local.artist) > 0)
+        {
+          snprintf(metaBuf, sizeof(metaBuf), "%s", local.artist);
+        }
+        else if (strlen(local.title) > 0)
+        {
+          snprintf(metaBuf, sizeof(metaBuf), "%s", local.title);
+        }
+        else
+        {
+          snprintf(metaBuf, sizeof(metaBuf), "%s", SRC_BT_NAME2);
+        }
+        snprintf(wsBuf, sizeof(wsBuf), "{\"payload\":[{\"id\":\"meta\", \"value\": \"%s\"}]}", metaBuf);
+        telnet.printf("##CLI.META#: %s\r\n> ", metaBuf);
+      }
+      else if (config.getMode() == PM_TV)
+      {
+        snprintf(wsBuf, sizeof(wsBuf), "{\"payload\":[{\"id\":\"meta\", \"value\": \"%s\"}]}", SRC_AUX1_NAME2);
+        telnet.printf("##CLI.META#: %s\r\n> ", SRC_AUX1_NAME2);
+      }
+      else if (config.getMode() == PM_AUX)
+      {
+        snprintf(wsBuf, sizeof(wsBuf), "{\"payload\":[{\"id\":\"meta\", \"value\": \"%s\"}]}", SRC_AUX2_NAME2);
+        telnet.printf("##CLI.META#: %s\r\n> ", SRC_AUX2_NAME2);
+      }
+      else
+      {
+        snprintf(wsBuf, sizeof(wsBuf), "{\"payload\":[{\"id\":\"meta\", \"value\": \"%s\"}]}", config.station.title);
+        telnet.printf("##CLI.META#: %s\r\n> ", config.station.title);
+      }
+    }
+    break;
     case VOLUME:
       sprintf(wsBuf, "{\"payload\":[{\"id\":\"volume\", \"value\": %d}]}", config.store.volume);
       telnet.printf("##CLI.VOL#: %d\r\n", config.store.volume);
