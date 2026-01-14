@@ -821,11 +821,11 @@ void Display::_title()
     {
       if (strlen(local.deviceName) > 0)
       {
-        stationText = local.deviceName;
+        stationText = String("BT: ") + local.deviceName;
       }
       else if (strlen(local.deviceMAC) > 0)
       {
-        stationText = local.deviceMAC;
+        stationText = String("BT: ") + local.deviceMAC;
       }
     }
     _meta->setText(stationText.c_str());
