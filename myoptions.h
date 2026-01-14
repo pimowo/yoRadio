@@ -128,10 +128,19 @@
 #define SRC_AUX2 true // AUX2 RCA
 
 /* Nazwy źródeł audio */
-#define SRC_SD_NAME "Karta SD"
-#define SRC_BT_NAME "Bluetooth"
-#define SRC_AUX1_NAME "AUX1 S/PDIF"
-#define SRC_AUX2_NAME "AUX2 RCA"
+#define SRC_WEB_NAME "_yoRadio"
+
+#define SRC_SD_NAME "_Karta SD"
+#define SRC_SD_NAME2 "_Brak karty SD!"
+
+#define SRC_BT_NAME "_Bluetooth"
+#define SRC_BT_NAME2 "_Brak połączenia"
+
+#define SRC_AUX1_NAME "_AUX1 S/PDIF"
+#define SRC_AUX1_NAME2 "_Wejście cyfrowe"
+
+#define SRC_AUX2_NAME "_AUX2 RCA"
+#define SRC_AUX2_NAME2 "_Wejście analogowe"
 
 /*
 ESP32_BT TX (GPIO 16) → yoRadio RX (GPIO 15)

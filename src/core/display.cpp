@@ -909,9 +909,21 @@ void Display::_title()
     netserver.requestOnChange(TITLE, 0);
     return;
   }
-  if (config.getMode() == PM_TV || config.getMode() == PM_AUX)
+  if (config.getMode() == PM_TV)
   {
-    _title1->setText("");
+    // TV/AUX1: show source name on station line (handled in _station())
+    // and secondary name on artist line; clear title line
+    _title1->setText(SRC_AUX1_NAME2);
+    if (_title2)
+      _title2->setText("");
+    strlcpy(config.station.title, "", sizeof(config.station.title));
+    netserver.requestOnChange(TITLE, 0);
+    return;
+  }
+  if (config.getMode() == PM_AUX)
+  {
+    // AUX2: same as above but use AUX2 names
+    _title1->setText(SRC_AUX2_NAME2);
     if (_title2)
       _title2->setText("");
     strlcpy(config.station.title, "", sizeof(config.station.title));
