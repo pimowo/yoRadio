@@ -1104,9 +1104,14 @@ void BitrateWidget::_draw()
 { // Módosítás
   _clear();
   // Serial.printf("widgets.cpp->BitrateWidget _draw() _active: %d _format: %d _bitrate %d \n", _active, _format, _bitrate) ;
-  if (!_active || _format == BF_UNKNOWN || _bitrate == 0)
+  if (!_active)
   {
-    // Serial.printf("widgets.cpp->BitrateWidget _draw() nem fut le. \n") ;
+    return;
+  }
+  // Normally bail out when unknown format or zero bitrate, but for Bluetooth
+  // we want to display the play/pause icon even if bitrate==0.
+  if (config.getMode() != PM_BLUETOOTH && (_format == BF_UNKNOWN || _bitrate == 0))
+  {
     return;
   }
   if (config.store.nameday)
