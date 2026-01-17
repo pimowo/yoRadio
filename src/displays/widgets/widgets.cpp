@@ -1141,18 +1141,7 @@ void BitrateWidget::_draw()
     dsp.fillRect(_config.left + 2, _config.top + 2, _dimension - 4, _dimension - 4, _bgcolor);
     if (playing)
     {
-      // draw pause: two vertical bars
-      int w = max(2, s / 3);
-      int h = s * 2;
-      int x1 = cx - w - 2;
-      int x2 = cx + 2;
-      int y = cy - h / 2;
-      dsp.fillRect(x1, y, w, h, icColor);
-      dsp.fillRect(x2, y, w, h, icColor);
-    }
-    else
-    {
-      // draw play triangle
+      // draw play triangle when playing (user prefers triangle while playing)
       int px1 = cx - s / 2;
       int py1 = cy - s;
       int px2 = cx - s / 2;
@@ -1160,6 +1149,17 @@ void BitrateWidget::_draw()
       int px3 = cx + s;
       int py3 = cy;
       dsp.fillTriangle(px1, py1, px2, py2, px3, py3, icColor);
+    }
+    else
+    {
+      // draw pause (two vertical bars) when stopped
+      int w = max(2, s / 3);
+      int h = s * 2;
+      int x1 = cx - w - 2;
+      int x2 = cx + 2;
+      int y = cy - h / 2;
+      dsp.fillRect(x1, y, w, h, icColor);
+      dsp.fillRect(x2, y, w, h, icColor);
     }
     return;
   }

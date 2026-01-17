@@ -634,24 +634,78 @@ void onBtnClick(int id)
 
         if (local.connected)
         {
+          Serial.println("ENC click: BT center");
           String cmd = local.playing ? "PAUSE" : "PLAY";
-          // If we're already awaiting ACK, don't flood with another command
-          bool shouldSend = true;
+          bool doInitialSend = false;
+          bool doResend = false;
+          uint8_t prevRetries = 0;
+          // Check state under mutex
           if (btMetaMutex)
             xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
-          if (btMeta.awaitingAck)
-            shouldSend = false;
-          if (shouldSend)
+          bool awaiting = btMeta.awaitingAck;
+          bool expected = btMeta.expectedPlaying;
+          prevRetries = btMeta.ackRetries;
+          if (!awaiting)
           {
+            doInitialSend = true;
+          }
+          else
+          {
+            // if awaiting and expected differs from desired, allow a user-triggered resend
+            bool desiredPlaying = (cmd == "PLAY");
+            const uint8_t MAX_ACK_RETRIES_LOCAL = 2;
+            if (expected != desiredPlaying && prevRetries < MAX_ACK_RETRIES_LOCAL)
+            {
+              doResend = true;
+            }
+          }
+          if (btMetaMutex)
+            xSemaphoreGive(btMetaMutex);
+
+          if (doInitialSend)
+          {
+            Serial.printf("BT: sending %s (initial)\n", cmd.c_str());
             btSerial.println(cmd);
-            delay(50);
+            // set flags under mutex
+            if (btMetaMutex)
+              xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+            btMeta.playing = (cmd == "PLAY");
             btMeta.awaitingAck = true;
             btMeta.expectedPlaying = (cmd == "PLAY");
             btMeta.ackDeadline = millis() + bt_ack_timeout_ms;
             btMeta.ackRetries = 0;
+            if (btMetaMutex)
+              xSemaphoreGive(btMetaMutex);
+            if (config.getMode() == PM_BLUETOOTH)
+            {
+              display.putRequest(DBITRATE);
+              display.putRequest(NEWTITLE);
+            }
           }
-          if (btMetaMutex)
-            xSemaphoreGive(btMetaMutex);
+          else if (doResend)
+          {
+            Serial.printf("BT: resending %s (user) retry %u\n", cmd.c_str(), (unsigned)prevRetries + 1);
+            btSerial.println(cmd);
+            if (btMetaMutex)
+              xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+            // optimistic update + bump retries
+            btMeta.playing = (cmd == "PLAY");
+            btMeta.awaitingAck = true;
+            btMeta.expectedPlaying = (cmd == "PLAY");
+            btMeta.ackRetries = prevRetries + 1;
+            btMeta.ackDeadline = millis() + bt_ack_timeout_ms;
+            if (btMetaMutex)
+              xSemaphoreGive(btMetaMutex);
+            if (config.getMode() == PM_BLUETOOTH)
+            {
+              display.putRequest(DBITRATE);
+              display.putRequest(NEWTITLE);
+            }
+          }
+          else
+          {
+            Serial.println("BT: click ignored — awaiting ACK");
+          }
         }
       }
       else

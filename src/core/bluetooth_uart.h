@@ -1,10 +1,11 @@
 #pragma once
 #include <stdint.h>
 // ACK timeout for play/pause (milliseconds)
-#define BT_ACK_TIMEOUT_MS 5000
+// Slightly increased to give phones a bit more time to reply
+#define BT_ACK_TIMEOUT_MS 7000
 // Heartbeat timeout: consider BT disconnected if no messages for this period (ms)
-// Increased to 60s to avoid spurious disconnects on noisy links
-#define BT_HEARTBEAT_TIMEOUT_MS 60000
+// Increased to 120s to avoid spurious disconnects on flaky links
+#define BT_HEARTBEAT_TIMEOUT_MS 120000
 
 // runtime-configurable timeouts (defaults defined by macros above)
 extern uint32_t bt_ack_timeout_ms;

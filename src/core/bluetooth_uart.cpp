@@ -190,6 +190,12 @@ void bluetooth_handle_line(const char *line)
         }
         if (btMetaMutex)
             xSemaphoreGive(btMetaMutex);
+        if (config.getMode() == PM_BLUETOOTH)
+        {
+            // update both bitrate widget (icon) and title lines
+            display.putRequest(DBITRATE);
+            display.putRequest(NEWTITLE);
+        }
         return;
     }
     if (strcmp(cmd, "STOPPED") == 0)
@@ -208,9 +214,12 @@ void bluetooth_handle_line(const char *line)
             xSemaphoreGive(btMetaMutex);
         if (config.getMode() == PM_BLUETOOTH)
         {
+            // when playback stops (pause), clear displayed meta and update title
             memset(config.station.title, 0, sizeof(config.station.title));
             netserver.requestOnChange(TITLE, 0);
             telnet.printf("##CLI.META#: \r\n");
+            display.putRequest(DBITRATE);
+            display.putRequest(NEWTITLE);
         }
         return;
     }

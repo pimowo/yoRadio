@@ -128,7 +128,7 @@
 #define SRC_AUX2 true // AUX2 RCA
 
 /* Nazwy źródeł audio */
-#define SRC_WEB_NAME "yoRadio"
+#define SRC_WEB_NAME "Radio"
 
 #define SRC_SD_NAME "Karta SD"
 #define SRC_SD_NAME2 "Brak karty SD!"
@@ -136,10 +136,10 @@
 #define SRC_BT_NAME "Bluetooth"
 #define SRC_BT_NAME2 "Oczekuję na połączenie..."
 
-#define SRC_AUX1_NAME "AUX1 S/PDIF"
+#define SRC_AUX1_NAME "AUX 1 S/PDIF"
 #define SRC_AUX1_NAME2 "Wejście audio cyfrowe"
 
-#define SRC_AUX2_NAME "AUX2 RCA"
+#define SRC_AUX2_NAME "AUX 2 RCA"
 #define SRC_AUX2_NAME2 "Wejście audio analogowe"
 
 /*
@@ -186,5 +186,11 @@ GND wspólny między urządzeniami
 
 // #define DIRECT_CHANNEL_CHANGE     // Zmiana bez klikania
 // #define STATIONS_LIST_RETURN_TIME 2
+
+/* =========================================================
+   18. WZMACNIACZ
+   ========================================================= */
+
+// #define PWR_AMP 38 // (złącze IR) załączenie wzmacniacza
 
 #endif // myoptions_h

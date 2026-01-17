@@ -8,6 +8,7 @@
 #include "player.h"
 #include "network.h"
 #include "netserver.h"
+#include "bluetooth_uart.h"
 #include "timekeeper.h"
 #include "../pluginsManager/pluginsManager.h"
 #include "../displays/dspcore.h"
@@ -615,6 +616,8 @@ void Display::loop()
           }
           if (_fullbitrate)
           {
+            // For BT mode we want the full bitrate widget active so it can
+            // draw the small play/pause icon even when bitrate==0.
             if (config.getMode() == PM_WEB || config.getMode() == PM_SDCARD)
             {
               _fullbitrate->setActive(true, false);
@@ -623,8 +626,11 @@ void Display::loop()
             }
             else
             {
-              config.station.bitrate = 0;
-              _fullbitrate->clearAll();
+              // enable widget and set bitrate to 0 so the widget's BT-specific
+              // drawing code can render the play/pause icon when in BT mode.
+              _fullbitrate->setActive(true, false);
+              _fullbitrate->setBitrate(0);
+              _fullbitrate->setFormat(config.configFmt);
             }
           }
         }
@@ -762,7 +768,21 @@ void Display::_station()
   _meta->setAlign(metaConf.widget.align);
   if (config.getMode() == PM_WEB)
   {
-    // If returning to WEB mode but player isn't running, show placeholder
+    // Prefer explicit station name when available — show it immediately
+    // even if player.isRunning() may briefly be false during transitions.
+    if (config.station.name[0] != '\0')
+    {
+      if (config.station.name[0] == '.')
+      {
+        _meta->setText(config.station.name + 1);
+      }
+      else
+      {
+        _meta->setText(config.station.name);
+      }
+      return;
+    }
+    // Fallback: show placeholder when no station name available and player not running
     if (!player.isRunning())
     {
       _meta->setText(SRC_WEB_NAME);
@@ -772,14 +792,6 @@ void Display::_station()
       if (_title2)
         _title2->setText("");
       return;
-    }
-    if (config.station.name[0] == '.')
-    {
-      _meta->setText(config.station.name + 1);
-    }
-    else
-    {
-      _meta->setText(config.station.name);
     }
   }
   else if (config.getMode() == PM_SDCARD)
@@ -817,7 +829,17 @@ void Display::_title()
     bt_metadata_t local;
     bt_meta_snapshot(&local);
 
-    if (local.connected)
+    // Treat device as "recently seen" even if `connected` was flipped,
+    // to avoid showing generic text during short disconnect flaps.
+    bool recentlySeen = false;
+    if (local.lastSeen > 0)
+    {
+      uint32_t age = millis() - local.lastSeen;
+      if (age <= bt_heartbeat_timeout_ms)
+        recentlySeen = true;
+    }
+
+    if (local.connected || recentlySeen)
     {
       if (strlen(local.deviceName) > 0)
       {
@@ -831,8 +853,18 @@ void Display::_title()
     _meta->setText(stationText.c_str());
     netserver.requestOnChange(STATIONNAME, 0);
 
-    if (local.connected)
+    if (local.connected || recentlySeen)
     {
+      // If playback is paused/stop (but device still present), show explicit pause state
+      if (!local.playing)
+      {
+        _title1->setText("[Zatrzymany]");
+        if (_title2)
+          _title2->setText("");
+        strlcpy(config.station.title, "", sizeof(config.station.title));
+        netserver.requestOnChange(TITLE, 0);
+        return;
+      }
       // Use snapshot's artist/title
       char localArtist[sizeof(local.artist)];
       char localTitle[sizeof(local.title)];
