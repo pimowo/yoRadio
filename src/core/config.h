@@ -390,6 +390,7 @@ struct bt_metadata_t
   bool awaitingAck = false;
   uint32_t ackDeadline = 0;
   bool expectedPlaying = false;
+  uint8_t ackRetries = 0;
   // heartbeat: timestamp of last received BT message (millis())
   uint32_t lastSeen = 0;
   // probe before disconnect: we send a STATUS ping once and wait probeDeadline

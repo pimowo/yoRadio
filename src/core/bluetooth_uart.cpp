@@ -186,6 +186,7 @@ void bluetooth_handle_line(const char *line)
         {
             btMeta.awaitingAck = false;
             btMeta.ackDeadline = 0;
+            btMeta.ackRetries = 0;
         }
         if (btMetaMutex)
             xSemaphoreGive(btMetaMutex);
@@ -201,6 +202,7 @@ void bluetooth_handle_line(const char *line)
         {
             btMeta.awaitingAck = false;
             btMeta.ackDeadline = 0;
+            btMeta.ackRetries = 0;
         }
         if (btMetaMutex)
             xSemaphoreGive(btMetaMutex);

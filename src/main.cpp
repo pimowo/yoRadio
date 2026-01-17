@@ -321,13 +321,36 @@ void loop()
   // Check for Bluetooth PLAY/PAUSE ACK timeout
   if (btMeta.awaitingAck && btMeta.ackDeadline > 0 && millis() > btMeta.ackDeadline)
   {
+    // Try to resend PLAY/PAUSE a couple of times before giving up
+    const uint8_t MAX_ACK_RETRIES = 2;
     if (btMetaMutex)
       xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
-    btMeta.awaitingAck = false;
-    btMeta.ackDeadline = 0;
+    if (btMeta.ackRetries < MAX_ACK_RETRIES)
+    {
+      // resend last expected command
+      if (btMeta.expectedPlaying)
+      {
+        Serial.println("BT: ACK timeout — retrying PLAY");
+        btSerial.println("PLAY");
+      }
+      else
+      {
+        Serial.println("BT: ACK timeout — retrying PAUSE");
+        btSerial.println("PAUSE");
+      }
+      btMeta.ackRetries++;
+      btMeta.ackDeadline = millis() + bt_ack_timeout_ms;
+    }
+    else
+    {
+      // exhausted retries — give up and clear awaiting flag
+      btMeta.awaitingAck = false;
+      btMeta.ackDeadline = 0;
+      btMeta.ackRetries = 0;
+      Serial.println("BT: ACK timeout for PLAY/PAUSE — giving up");
+    }
     if (btMetaMutex)
       xSemaphoreGive(btMetaMutex);
-    Serial.println("BT: ACK timeout for PLAY/PAUSE");
   }
 
   // Heartbeat/timeout: only mark disconnected when we had active playback
