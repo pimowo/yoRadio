@@ -213,7 +213,11 @@ void Config::changeMode(int newmode)
         ok = true;
         break;
       case PM_SDCARD:
-        ok = SRC_SD; // Include SD in cycle if enabled in myoptions.h (even without USE_SD)
+#ifdef USE_SD
+        ok = SRC_SD;
+#else
+        ok = false;
+#endif
         break;
       case PM_BLUETOOTH:
         ok = SRC_BT;
@@ -300,11 +304,7 @@ void Config::changeMode(int newmode)
   if (getMode() == PM_SDCARD)
   {
     if (pir)
-    {
-      Serial.println("Stopping player synchronously for SD mode");
-      player._stop(false); // ensure stream is stopped immediately when entering SD
-      delay(100);
-    }
+      player.sendCommand({PR_STOP, 0});
     display.putRequest(NEWMODE, SDCHANGE);
 #ifdef NETSERVER_LOOP1
     while (display.mode() != SDCHANGE)
@@ -337,27 +337,14 @@ void Config::changeMode(int newmode)
   }
   if (!_bootDone)
     return;
-  // Start playback automatically only for SD mode. For WEB (internet radio)
-  // we return to stopped state and show a placeholder on the display.
-  if (getMode() == PM_SDCARD)
-  {
-    Serial.print("Starting play for mode: ");
-    Serial.println(getMode());
-    player.sendCommand({PR_PLAY, store.lastSdStation});
-  }
+  if (getMode() == PM_WEB || getMode() == PM_SDCARD)
+    player.sendCommand({PR_PLAY, getMode() == PM_WEB ? store.lastStation : store.lastSdStation});
   if (getMode() == PM_WEB)
   {
     // Prepare station data but do NOT auto-start playback.
     loadStation(store.lastStation > 0 ? store.lastStation : 1);
-    // Request bitrate refresh (will be empty until play starts and metadata arrives)
-    for (int i = 0; i < 3; ++i)
-    {
-      delay(200);
-      display.putRequest(DBITRATE);
-      Serial.println("Requested DBITRATE refresh");
-    }
-    // ensure player is stopped
-    player.sendCommand({PR_STOP, 0});
+    delay(1000); // Give more time for bitrate to be received
+    display.putRequest(DBITRATE);
   }
 #endif
   netserver.resetQueue();
