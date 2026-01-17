@@ -198,54 +198,19 @@ void Config::changeMode(int newmode)
   playMode_e oldMode = (playMode_e)getMode();
   if (newmode < 0 || newmode > 4)
   {
-    // Explicitly cycle through modes in desired order and check availability flags
-    const playMode_e modes[] = {PM_WEB, PM_SDCARD, PM_BLUETOOTH, PM_TV, PM_AUX};
-    int cur = (int)store.play_mode;
-    int found = -1;
-    for (int step = 1; step <= 5; ++step)
+    do
     {
-      int cand = (cur + step) % 5;
-      playMode_e pm = modes[cand];
-      bool ok = false;
-      switch (pm)
-      {
-      case PM_WEB:
-        ok = true;
-        break;
-      case PM_SDCARD:
+      store.play_mode = (store.play_mode + 1) % 5;
+    } while ((store.play_mode == PM_SDCARD && (
 #ifdef USE_SD
-        ok = SRC_SD;
+                                                  !sdman.ready
 #else
-        ok = false;
+                                                  true // zawsze pomiń SD dla urządzeń bez USE_SD
 #endif
-        break;
-      case PM_BLUETOOTH:
-        ok = SRC_BT;
-        break;
-      case PM_TV:
-        ok = SRC_AUX1;
-        break;
-      case PM_AUX:
-        ok = SRC_AUX2;
-        break;
-      }
-      if (ok)
-      {
-        found = cand;
-        break;
-      }
-    }
-    if (found >= 0)
-    {
-      store.play_mode = (playMode_e)found;
-      Serial.print("Selected mode: ");
-      Serial.println(store.play_mode);
-    }
-    else
-    {
-      // fallback to web
-      store.play_mode = PM_WEB;
-    }
+                                                  )) ||
+             (store.play_mode == PM_BLUETOOTH && !SRC_BT) ||
+             (store.play_mode == PM_TV && !SRC_AUX1) ||
+             (store.play_mode == PM_AUX && !SRC_AUX2));
   }
   else
   {
@@ -326,10 +291,13 @@ void Config::changeMode(int newmode)
   {
     if (pir)
     {
-      // Synchronous stop
-      player._stop(false);
-      // Clear any bitrate watchdog
-      player.waitingBitrate = false;
+      player.sendCommand({PR_STOP, 0});
+      // Wait for player to stop
+      uint32_t start = millis();
+      while (player.isRunning() && (millis() - start) < 1000)
+      {
+        delay(10);
+      }
     }
     // Reset bitrate for non-streaming sources
     station.bitrate = 0;
@@ -343,8 +311,6 @@ void Config::changeMode(int newmode)
   {
     // Prepare station data but do NOT auto-start playback.
     loadStation(store.lastStation > 0 ? store.lastStation : 1);
-    delay(1000); // Give more time for bitrate to be received
-    display.putRequest(DBITRATE);
   }
 #endif
   netserver.resetQueue();
@@ -439,16 +405,6 @@ void Config::configPostPlaying(uint16_t stationId)
     setSmartStart(1);
   netserver.requestOnChange(MODE, 0);
   display.putRequest(PSTART);
-  display.putRequest(DBITRATE); // Force bitrate update after starting play
-  // Ensure station/title are refreshed now that playback started
-  display.putRequest(NEWSTATION);
-  display.putRequest(NEWTITLE);
-  // Start bitrate watchdog in player
-  player.waitingBitrate = true;
-  player.bitrateRetries = 0;
-  player.bitrateWatchUntil = millis() + 3000;
-  delay(2000); // Wait for bitrate
-  display.putRequest(DBITRATE);
 }
 
 void Config::setSDpos(uint32_t val)
