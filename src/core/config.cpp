@@ -216,6 +216,23 @@ void Config::changeMode(int newmode)
   {
     store.play_mode = (playMode_e)newmode;
   }
+  // If we are leaving Bluetooth mode, inform device to pause playback
+  if (oldMode == PM_BLUETOOTH && store.play_mode != PM_BLUETOOTH)
+  {
+    bt_metadata_t local;
+    bt_meta_snapshot(&local);
+    if (local.connected)
+    {
+      btSerial.println("PAUSE");
+      if (btMetaMutex)
+        xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
+      btMeta.awaitingAck = true;
+      btMeta.expectedPlaying = false;
+      btMeta.ackDeadline = millis() + bt_ack_timeout_ms;
+      if (btMetaMutex)
+        xSemaphoreGive(btMetaMutex);
+    }
+  }
   saveValue(&store.play_mode, store.play_mode, true, true);
 
   // If we are leaving WEB (internet radio) stop the player immediately
