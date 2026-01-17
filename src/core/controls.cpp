@@ -635,13 +635,21 @@ void onBtnClick(int id)
         if (local.connected)
         {
           String cmd = local.playing ? "PAUSE" : "PLAY";
-          btSerial.println(cmd);
-          // Don't flip btMeta.playing locally - wait for device confirmation (PLAYING/STOPPED)
+          // If we're already awaiting ACK, don't flood with another command
+          bool shouldSend = true;
           if (btMetaMutex)
             xSemaphoreTake(btMetaMutex, pdMS_TO_TICKS(100));
-          btMeta.awaitingAck = true;
-          btMeta.expectedPlaying = (cmd == "PLAY");
-          btMeta.ackDeadline = millis() + bt_ack_timeout_ms;
+          if (btMeta.awaitingAck)
+            shouldSend = false;
+          if (shouldSend)
+          {
+            btSerial.println(cmd);
+            delay(50);
+            btMeta.awaitingAck = true;
+            btMeta.expectedPlaying = (cmd == "PLAY");
+            btMeta.ackDeadline = millis() + bt_ack_timeout_ms;
+            btMeta.ackRetries = 0;
+          }
           if (btMetaMutex)
             xSemaphoreGive(btMetaMutex);
         }
